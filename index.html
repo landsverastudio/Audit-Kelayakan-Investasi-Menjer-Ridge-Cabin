@@ -43,6 +43,20 @@
             display: inline-block;
             animation: spin 1s linear infinite;
         }
+
+        #summaryText {
+            white-space: pre-wrap;
+        }
+        
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+        }
+
+        .hidden {
+            display: none !important;
+        }
     </style>
 </head>
 <body class="bg-gray-100 flex flex-col items-center justify-center min-h-screen p-4">
@@ -50,7 +64,7 @@
     <div class="container flex flex-col lg:flex-row gap-8 bg-white rounded-xl shadow-lg p-8 mb-4">
 
         <!-- Input Section -->
-        <div class="lg:w-1/2 space-y-6">
+        <div id="inputSection" class="lg:w-1/2 space-y-6 no-print">
             <header class="text-center space-y-2">
                 <h1 class="text-3xl font-bold text-gray-800">Kalkulator Kelayakan Investasi</h1>
                 <p class="text-gray-500">Menjer Ridge Cabins</p>
@@ -194,7 +208,7 @@
         </div>
 
         <!-- Results Section -->
-        <div class="lg:w-1/2 space-y-6 flex flex-col">
+        <div class="lg:w-1/2 space-y-6 flex flex-col print-section" id="resultsSection">
             <h2 class="text-xl font-bold text-gray-700 text-center">Indikator Kinerja Utama</h2>
             
             <!-- Minimalist Infographic Section (ROI Gauge) -->
@@ -240,12 +254,29 @@
                     <p id="landOwnerProfit" class="text-lg font-bold text-gray-800">Rp 0</p>
                 </div>
             </div>
-        </div>
 
+            <!-- Gemini API Section -->
+            <div id="geminiApiSection" class="p-4 bg-gray-100 rounded-lg space-y-4 text-center no-print">
+                 <button id="generateSummaryBtn" class="w-full bg-indigo-600 text-white py-2 rounded-lg font-semibold shadow-md hover:bg-indigo-700 transition-colors duration-200 text-sm" disabled>
+                     Buat Ringkasan Eksekutif
+                 </button>
+                 <div id="summaryContainer" class="hidden text-left p-4 bg-white rounded-lg shadow-inner mt-4">
+                     <p id="summaryText" class="text-gray-700 leading-relaxed"></p>
+                 </div>
+            </div>
+
+            <!-- Export Button -->
+            <button id="exportBtn" class="no-print w-full bg-slate-500 text-white py-2 rounded-lg font-semibold shadow-md hover:bg-slate-700 transition-colors duration-200 text-sm mt-4" disabled>
+                Ekspor Hasil Proyeksi
+            </button>
+        </div>
     </div>
 
+    <!-- Hidden element for PDF generation -->
+    <div id="reportContent" class="hidden p-8 font-sans text-sm w-[8.5in] h-[11in] mx-auto bg-white border border-gray-300"></div>
+
     <!-- Footer Section -->
-    <footer class="w-full mt-4 flex flex-col items-center text-xs text-gray-600 space-y-4">
+    <footer class="w-full mt-4 flex flex-col items-center text-xs text-gray-600 space-y-4 no-print">
         <div class="max-w-4xl space-y-4 p-4 bg-red-50 rounded-lg text-sm text-center text-red-700 shadow-md">
             <p class="font-semibold">Disclaimer:</p>
             <p>Hasil perhitungan ini adalah estimasi awal berdasarkan asumsi yang Anda masukkan. Proyeksi keuangan aktual dapat bervariasi secara signifikan. Kalkulator ini berfungsi sebagai alat analisis pendahuluan dan bukan pengganti studi kelayakan bisnis yang komprehensif.</p>
@@ -270,6 +301,8 @@
         </div>
     </footer>
     
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const luasLahan = 3072.9;
@@ -277,6 +310,8 @@
             const jumlahTipe2 = 5;
             const annualDays = 365;
             const projectionPeriod = 10;
+            const apiKey = "";
+            const apiUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=";
 
             const buyOption = document.getElementById('buyOption');
             const loanOption = document.getElementById('loanOption');
@@ -308,8 +343,14 @@
             const taxRateInput = document.getElementById('taxRate');
             const discountRateInput = document.getElementById('discountRate');
             const calculateBtn = document.getElementById('calculateBtn');
+            const exportBtn = document.getElementById('exportBtn');
             const buttonText = document.getElementById('buttonText');
             const buttonSpinner = document.getElementById('buttonSpinner');
+            const generateSummaryBtn = document.getElementById('generateSummaryBtn');
+            const summaryContainer = document.getElementById('summaryContainer');
+            const summaryText = document.getElementById('summaryText');
+            
+            const reportContentDiv = document.getElementById('reportContent');
 
             const totalCapexEl = document.getElementById('totalCapex');
             const totalRevenueEl = document.getElementById('totalRevenue');
@@ -331,6 +372,9 @@
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2
             });
+
+            let latestCalculatedMetrics = {};
+            let latestSummaryText = '';
 
             const formatRupiah = (value) => {
                 const number = parseFloat(value);
@@ -413,7 +457,8 @@
                 const isBuyScenario = buyOption.checked;
                 const isLoanScenario = loanOption.checked;
                 const isSharingScenario = sharingOption.checked;
-                
+                const currentScenario = document.querySelector('input[name="scenario"]:checked').value;
+
                 const buildingCost = unformatRupiah(buildingCostInput.value) || 0;
                 const adrTipe1 = unformatRupiah(adrTipe1Input.value) || 0;
                 const adrTipe2 = unformatRupiah(adrTipe2Input.value) || 0;
@@ -512,6 +557,41 @@
                     projectedLandLeaseCost *= (1 + opexGrowth);
                 }
 
+                latestCalculatedMetrics = {
+                    totalCapex: totalCapex,
+                    totalRevenueY1: totalRevenueY1,
+                    netProfitInvestorY1: netProfitInvestorY1,
+                    roi: roi,
+                    paybackYears: paybackYears,
+                    npv: npv,
+                    landOwnerProfitY1: landOwnerProfitY1,
+                    scenario: currentScenario,
+                    
+                    // Store input values for the report
+                    inputs: {
+                        landPrice: landPriceInput.value,
+                        landLeaseCost: landLeaseCostInput.value,
+                        buildingCost: buildingCostInput.value,
+                        equity: equityInput.value,
+                        loanRate: loanRateInput.value,
+                        loanTerm: loanTermInput.value,
+                        investorShare: investorShareInput.value,
+                        landOwnerShare: landOwnerShareInput.value,
+                        adrTipe1: adrTipe1Input.value,
+                        adrTipe2: adrTipe2Input.value,
+                        occupancy: occupancyInput.value,
+                        fnbRevenue: fnbRevenueInput.value,
+                        opexRate: opexRateInput.value,
+                        fixedOpex: fixedOpexInput.value,
+                        maintenanceRate: maintenanceRateInput.value,
+                        revenueGrowth: revenueGrowthInput.value,
+                        opexGrowth: opexGrowthInput.value,
+                        taxRate: taxRateInput.value,
+                        discountRate: discountRateInput.value,
+                    }
+                };
+
+
                 totalCapexEl.textContent = formatter.format(totalCapex);
                 totalRevenueEl.textContent = formatter.format(totalRevenueY1);
                 netProfitEl.textContent = formatter.format(netProfitInvestorY1);
@@ -543,6 +623,15 @@
                     roiArc.classList.remove('text-green-500');
                     roiArc.classList.add('text-red-500');
                 }
+
+                 // Hide summary and enable the summary and export button
+                summaryContainer.classList.add('hidden');
+                generateSummaryBtn.disabled = false;
+                generateSummaryBtn.classList.remove('bg-indigo-400', 'cursor-not-allowed');
+                generateSummaryBtn.classList.add('hover:bg-indigo-700');
+                exportBtn.disabled = false;
+                exportBtn.classList.remove('bg-slate-400', 'cursor-not-allowed');
+                exportBtn.classList.add('hover:bg-slate-700');
             };
 
             const handleCalculateClick = () => {
@@ -562,12 +651,165 @@
                 }, 1500);
             };
 
+            const handleGenerateSummary = async () => {
+                summaryContainer.classList.add('hidden');
+                generateSummaryBtn.disabled = true;
+                generateSummaryBtn.innerHTML = 'Membuat Ringkasan...';
+
+                const { totalCapex, totalRevenueY1, netProfitInvestorY1, roi, paybackYears, npv, scenario } = latestCalculatedMetrics;
+                const scenarioName = {
+                    'buy': 'Akuisisi Lahan (Tunai)',
+                    'loan': 'Akuisisi Lahan (Utang)',
+                    'lease': 'Sewa Lahan',
+                    'sharing': 'Joint Venture'
+                }[scenario];
+                
+                const prompt = `Bertindak sebagai analis keuangan tingkat senior. Buat ringkasan eksekutif yang rapi dan terstruktur dalam format Markdown. Gunakan judul dan sub-judul untuk setiap bagian, serta poin-poin untuk metrik kunci. Gunakan bahasa Indonesia yang formal. Hindari simbol-simbol tidak berguna. Ini adalah proposal investasi "Menjer Ridge Cabins" dengan skenario "${scenarioName}". Masukkan metrik keuangan ini:
+                - Total Biaya Modal (CapEx): ${formatter.format(totalCapex)}
+                - Total Pendapatan Tahun Pertama: ${formatter.format(totalRevenueY1)}
+                - Laba Bersih Tahun Pertama: ${formatter.format(netProfitInvestorY1)}
+                - ROI (Tahun 1): ${numberFormatter.format(roi)}%
+                - Periode Pengembalian Modal: ${paybackYears}
+                - Net Present Value (NPV) (10 Tahun): ${formatter.format(npv)}
+                Sajikan analisis yang profesional, menyoroti potensi proyek dan kelayakan investasi.`;
+
+                 const payload = {
+                    contents: [{ parts: [{ text: prompt }] }],
+                    systemInstruction: {
+                        parts: [{ text: "Anda adalah seorang analis keuangan senior yang menyusun ringkasan eksekutif dalam format Markdown yang rapi dan terstruktur." }]
+                    },
+                };
+
+                try {
+                    const response = await fetch(apiUrl + apiKey, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(payload)
+                    });
+
+                    const result = await response.json();
+                    const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
+
+                    if (text) {
+                        latestSummaryText = text;
+                        summaryText.innerHTML = marked.parse(text); // Menggunakan library marked.js untuk rendering Markdown
+                        summaryContainer.classList.remove('hidden');
+                    } else {
+                        summaryText.textContent = "Maaf, gagal membuat ringkasan. Silakan coba lagi.";
+                        summaryContainer.classList.remove('hidden');
+                    }
+                } catch (error) {
+                    console.error("Error calling Gemini API:", error);
+                    summaryText.textContent = "Terjadi kesalahan saat menghubungi API. Silakan coba lagi nanti.";
+                    summaryContainer.classList.remove('hidden');
+                } finally {
+                    generateSummaryBtn.innerHTML = 'Buat Ringkasan Eksekutif';
+                    generateSummaryBtn.disabled = false;
+                }
+            };
+            
+            const handleExportClick = () => {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF('p', 'pt', 'a4');
+                const scenarioName = {
+                    'buy': 'Akuisisi Lahan (Tunai)',
+                    'loan': 'Akuisisi Lahan (Utang)',
+                    'lease': 'Sewa Lahan',
+                    'sharing': 'Joint Venture'
+                }[latestCalculatedMetrics.scenario];
+
+                // Create a temporary element to render the report content for PDF
+                const reportContent = document.createElement('div');
+                reportContent.style.width = '210mm'; // A4 width
+                reportContent.style.padding = '20mm';
+                reportContent.style.fontSize = '12pt';
+
+                reportContent.innerHTML = `
+                    <h1 style="font-size: 1.5em; font-weight: bold; text-align: center; margin-bottom: 20px;">Laporan Proyeksi Keuangan: Menjer Ridge Cabins</h1>
+                    <ul style="margin-bottom: 20px; list-style-type: none; padding-left: 0;">
+                        <li><strong>Proyek:</strong> Menjer Ridge Cabins</li>
+                        <li><strong>Lokasi:</strong> Jalan Bukit Cinta, Desa Maron, Garung, Wonosobo, Jawa Tengah, 56354</li>
+                        <li><strong>Luas Lahan:</strong> 3.072,9 m²</li>
+                        <li><strong>Skenario Investasi:</strong> ${scenarioName}</li>
+                    </ul>
+
+                    <h2 style="font-size: 1.2em; font-weight: bold; margin-bottom: 10px;">Ringkasan Metrik Kinerja Kunci</h2>
+                    <ul style="margin-bottom: 20px;">
+                        <li><strong>Total Biaya Modal (CapEx):</strong> ${formatter.format(latestCalculatedMetrics.totalCapex)}</li>
+                        <li><strong>Total Pendapatan Proyek (Tahun 1):</strong> ${formatter.format(latestCalculatedMetrics.totalRevenueY1)}</li>
+                        <li><strong>Laba Bersih Setelah Pajak (Tahun 1):</strong> ${formatter.format(latestCalculatedMetrics.netProfitInvestorY1)}</li>
+                        <li><strong>ROI (Return on Investment) (Tahun 1):</strong> ${numberFormatter.format(latestCalculatedMetrics.roi)}%</li>
+                        <li><strong>Periode Pengembalian (Payback Period):</strong> ${latestCalculatedMetrics.paybackYears}</li>
+                        <li><strong>NPV (Net Present Value) (10 Tahun):</strong> ${formatter.format(latestCalculatedMetrics.npv)}</li>
+                        ${latestCalculatedMetrics.scenario === 'sharing' ? `<li><strong>Laba Bersih untuk Pemilik Lahan (Tahun 1):</strong> ${formatter.format(latestCalculatedMetrics.landOwnerProfitY1)}</li>` : ''}
+                    </ul>
+
+                    <h2 style="font-size: 1.2em; font-weight: bold; margin-bottom: 10px;">Asumsi Parameter</h2>
+                    <ul style="margin-bottom: 20px;">
+                        <li><strong>Biaya Lahan:</strong> ${latestCalculatedMetrics.inputs.landPrice}</li>
+                        <li><strong>Biaya Sewa Lahan:</strong> ${latestCalculatedMetrics.inputs.landLeaseCost}</li>
+                        <li><strong>Biaya Konstruksi & Fasilitas:</strong> ${latestCalculatedMetrics.inputs.buildingCost}</li>
+                        <li><strong>Rasio Ekuitas:</strong> ${latestCalculatedMetrics.inputs.equity}%</li>
+                        <li><strong>Bunga Pinjaman Tahunan:</strong> ${latestCalculatedMetrics.inputs.loanRate}%</li>
+                        <li><strong>Jangka Waktu Pinjaman:</strong> ${latestCalculatedMetrics.inputs.loanTerm} Tahun</li>
+                        <li><strong>Porsi Bagi Hasil Investor:</strong> ${latestCalculatedMetrics.inputs.investorShare}%</li>
+                        <li><strong>Porsi Bagi Hasil Pemilik Lahan:</strong> ${latestCalculatedMetrics.inputs.landOwnerShare}%</li>
+                        <li><strong>ADR Tipe 1:</strong> ${latestCalculatedMetrics.inputs.adrTipe1}</li>
+                        <li><strong>ADR Tipe 2:</strong> ${latestCalculatedMetrics.inputs.adrTipe2}</li>
+                        <li><strong>Okupansi Tahunan:</strong> ${latestCalculatedMetrics.inputs.occupancy}%</li>
+                        <li><strong>Pendapatan F&B:</strong> ${latestCalculatedMetrics.inputs.fnbRevenue}%</li>
+                        <li><strong>Rasio OPEX Variabel:</strong> ${latestCalculatedMetrics.inputs.opexRate}%</li>
+                        <li><strong>OPEX Tetap:</strong> ${latestCalculatedMetrics.inputs.fixedOpex}</li>
+                        <li><strong>Biaya Pemeliharaan Tahunan:</strong> ${latestCalculatedMetrics.inputs.maintenanceRate}%</li>
+                        <li><strong>Pertumbuhan Pendapatan Tahunan:</strong> ${latestCalculatedMetrics.inputs.revenueGrowth}%</li>
+                        <li><strong>Pertumbuhan OPEX Tahunan:</strong> ${latestCalculatedMetrics.inputs.opexGrowth}%</li>
+                        <li><strong>Tingkat Pajak Korporasi:</strong> ${latestCalculatedMetrics.inputs.taxRate}%</li>
+                        <li><strong>Tingkat Diskonto:</strong> ${latestCalculatedMetrics.inputs.discountRate}%</li>
+                    </ul>
+
+                    <p style="font-size: 0.8em; color: gray; text-align: center; margin-top: 50px;">Laporan ini dibuat secara otomatis oleh Kalkulator Kelayakan Investasi Lanjutan</p>
+                `;
+
+                document.body.appendChild(reportContent);
+
+                html2canvas(reportContent, {
+                    scale: 2,
+                    logging: true,
+                    useCORS: true
+                }).then(canvas => {
+                    const imgData = canvas.toDataURL('image/jpeg', 1.0);
+                    const imgWidth = 595.28; 
+                    const pageHeight = 841.89;
+                    const imgHeight = canvas.height * imgWidth / canvas.width;
+                    let heightLeft = imgHeight;
+                    let position = 0;
+                    
+                    const doc = new jsPDF('p', 'pt', 'a4');
+                    doc.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
+                    heightLeft -= pageHeight;
+
+                    while (heightLeft >= 0) {
+                        position = heightLeft - imgHeight;
+                        doc.addPage();
+                        doc.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
+                        heightLeft -= pageHeight;
+                    }
+
+                    doc.save(`Laporan-Proyeksi-Menjer-Ridge-Cabins.pdf`);
+                    document.body.removeChild(reportContent);
+                });
+            };
+
             updateInputVisibility();
             buyOption.addEventListener('change', updateInputVisibility);
             loanOption.addEventListener('change', updateInputVisibility);
             leaseOption.addEventListener('change', updateInputVisibility);
             sharingOption.addEventListener('change', updateInputVisibility);
             calculateBtn.addEventListener('click', handleCalculateClick);
+            generateSummaryBtn.addEventListener('click', handleGenerateSummary);
+            exportBtn.addEventListener('click', handleExportClick);
 
             const allInputs = document.querySelectorAll('input[type="text"], input[type="number"]');
             allInputs.forEach((input, index) => {
@@ -584,6 +826,8 @@
 
         });
     </script>
+    <!-- Marked.js for Markdown rendering -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
 </body>
 </html>
