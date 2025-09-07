@@ -32,6 +32,20 @@
         input[type="number"] {
             -moz-appearance: textfield;
         }
+        
+        /* Spinner animation */
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        .spinner {
+            display: inline-block;
+            animation: spin 1s linear infinite;
+        }
     </style>
 </head>
 <body class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
@@ -116,13 +130,35 @@
         
         <!-- Action Button -->
         <button id="calculateBtn" class="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold shadow-md hover:bg-blue-700 transition-colors duration-200">
-            Hitung Proyeksi
+            <span id="buttonText">Hitung Proyeksi</span>
+            <span id="buttonSpinner" class="hidden spinner">
+                <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+            </span>
         </button>
 
         <!-- Disclaimer Section -->
         <div class="space-y-4 p-4 bg-red-50 rounded-lg text-sm text-center text-red-700 mt-4">
             <p class="font-semibold">Disclaimer:</p>
             <p>Hasil perhitungan ini adalah estimasi kasar berdasarkan asumsi yang Anda masukkan. Proyeksi keuangan aktual dapat bervariasi secara signifikan karena faktor-faktor pasar yang dinamis dan kondisi bisnis yang tidak terduga. Kalkulator ini berfungsi sebagai alat bantu analisis awal dan bukan pengganti studi kelayakan bisnis yang komprehensif.</p>
+        </div>
+
+        <!-- Minimalist Infographic Section (ROI Gauge) -->
+        <div class="space-y-6 mt-8 p-6 bg-gray-50 rounded-xl shadow text-center">
+            <h2 class="text-xl font-bold text-gray-700">Indikator Kinerja Utama</h2>
+            <div class="flex flex-col items-center">
+                <svg id="roiGauge" class="w-36 h-36" viewBox="0 0 120 120">
+                    <circle class="text-gray-200" stroke-width="10" stroke="currentColor" fill="transparent" r="50" cx="60" cy="60"></circle>
+                    <circle id="roiArc" class="text-green-500 transition-all duration-700 ease-in-out" stroke-width="10" stroke="currentColor" fill="transparent" r="50" cx="60" cy="60" style="transform: rotate(-90deg); transform-origin: 50% 50%;"></circle>
+                    <text id="roiText" x="60" y="60" text-anchor="middle" dominant-baseline="middle" class="text-2xl font-bold text-gray-800">0%</text>
+                    <text x="60" y="80" text-anchor="middle" dominant-baseline="middle" class="text-sm font-medium text-gray-500">ROI</text>
+                </svg>
+                <div class="mt-4 text-sm text-gray-600">
+                    <p>ROI lebih dari 100% menandakan proyek menguntungkan pada tahun pertama.</p>
+                </div>
+            </div>
         </div>
 
         <!-- Results Section -->
@@ -218,6 +254,8 @@
             const taxRateInput = document.getElementById('taxRate');
             const discountRateInput = document.getElementById('discountRate');
             const calculateBtn = document.getElementById('calculateBtn');
+            const buttonText = document.getElementById('buttonText');
+            const buttonSpinner = document.getElementById('buttonSpinner');
 
             const totalCapexEl = document.getElementById('totalCapex');
             const totalRevenueEl = document.getElementById('totalRevenue');
@@ -225,6 +263,10 @@
             const roiEl = document.getElementById('roi');
             const paybackEl = document.getElementById('payback');
             const npvEl = document.getElementById('npv');
+            
+            // ROI Gauge elements
+            const roiArc = document.getElementById('roiArc');
+            const roiText = document.getElementById('roiText');
 
             // Format number to Indonesian Rupiah
             const formatter = new Intl.NumberFormat('id-ID', {
@@ -296,7 +338,7 @@
                     projectedOpex = newVariableOpex + newFixedOpex + newMaintenanceCost;
                 }
 
-                // Display results, check for NaN or Infinity
+                // Display results in text format
                 totalCapexEl.textContent = formatter.format(totalCapex);
                 totalRevenueEl.textContent = formatter.format(totalRevenueY1);
                 netProfitEl.textContent = formatter.format(netProfitY1);
@@ -316,13 +358,52 @@
                 if (isNaN(roi) || !isFinite(roi)) {
                     roiEl.textContent = '0%';
                 }
+
+                // Update ROI Gauge
+                const circumference = 2 * Math.PI * 50; // 2 * PI * radius
+                let roiValue = Math.min(Math.max(roi, 0), 200); // Clamp ROI value to a range (e.g., 0-200%)
+                const offset = circumference - (roiValue / 200 * circumference);
+                
+                roiArc.style.strokeDasharray = circumference;
+                roiArc.style.strokeDashoffset = offset;
+                roiText.textContent = `${Math.round(roiValue)}%`;
+
+                // Change gauge color based on ROI
+                if (roi > 0) {
+                    roiArc.classList.remove('text-red-500');
+                    roiArc.classList.add('text-green-500');
+                } else {
+                    roiArc.classList.remove('text-green-500');
+                    roiArc.classList.add('text-red-500');
+                }
+            };
+
+            const handleCalculateClick = () => {
+                // Set loading state
+                buttonText.textContent = 'Menghitung...';
+                buttonSpinner.classList.remove('hidden');
+                calculateBtn.disabled = true;
+                calculateBtn.classList.add('bg-blue-400', 'cursor-not-allowed');
+                calculateBtn.classList.remove('hover:bg-blue-700');
+
+                // Simulate a delay for a better user experience
+                setTimeout(() => {
+                    calculateMetrics();
+
+                    // Revert button state
+                    buttonText.textContent = 'Hitung Proyeksi';
+                    buttonSpinner.classList.add('hidden');
+                    calculateBtn.disabled = false;
+                    calculateBtn.classList.remove('bg-blue-400', 'cursor-not-allowed');
+                    calculateBtn.classList.add('hover:bg-blue-700');
+                }, 1500); // 1.5 second delay
             };
 
             // Initial calculation on page load
             calculateMetrics();
 
             // Attach event listener to the button
-            calculateBtn.addEventListener('click', calculateMetrics);
+            calculateBtn.addEventListener('click', handleCalculateClick);
         });
     </script>
 
