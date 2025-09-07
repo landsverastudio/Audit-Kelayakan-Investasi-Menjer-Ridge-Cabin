@@ -13,7 +13,7 @@
             color: #1a202c;
         }
         .container {
-            max-width: 800px;
+            max-width: 1200px;
             margin: 0 auto;
             padding: 2rem;
         }
@@ -23,7 +23,6 @@
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             padding: 2rem;
         }
-        /* Style for number input spin buttons */
         input[type="number"]::-webkit-inner-spin-button,
         input[type="number"]::-webkit-outer-spin-button {
             -webkit-appearance: none;
@@ -32,8 +31,6 @@
         input[type="number"] {
             -moz-appearance: textfield;
         }
-        
-        /* Spinner animation */
         @keyframes spin {
             from {
                 transform: rotate(0deg);
@@ -48,260 +45,239 @@
         }
     </style>
 </head>
-<body class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
+<body class="bg-gray-100 flex flex-col items-center justify-center min-h-screen p-4">
 
-    <div class="container bg-white rounded-xl shadow-lg p-8 space-y-8">
-        <!-- Header Section -->
-        <header class="text-center space-y-2">
-            <h1 class="text-3xl font-bold text-gray-800">Kalkulator Kelayakan Investasi Komprehensif</h1>
-            <p class="text-gray-500">Menjer Ridge Cabins</p>
-            <p class="text-sm text-gray-400">Pilih skema investasi, lalu ubah asumsi untuk melihat proyeksi finansial secara instan.</p>
-        </header>
-
-        <!-- Scenario Selection -->
-        <div class="p-6 bg-purple-50 rounded-lg text-center space-y-4">
-            <h2 class="text-xl font-semibold text-purple-700">Pilih Model Investasi</h2>
-            <div class="flex flex-col md:flex-row justify-center space-y-4 md:space-y-0 md:space-x-6">
-                <label class="inline-flex items-center">
-                    <input type="radio" id="buyOption" name="scenario" value="buy" class="form-radio h-5 w-5 text-purple-600" checked>
-                    <span class="ml-2 text-gray-700">Akuisisi Lahan (Tunai)</span>
-                </label>
-                <label class="inline-flex items-center">
-                    <input type="radio" id="loanOption" name="scenario" value="loan" class="form-radio h-5 w-5 text-purple-600">
-                    <span class="ml-2 text-gray-700">Akuisisi Lahan (Utang)</span>
-                </label>
-                <label class="inline-flex items-center">
-                    <input type="radio" id="leaseOption" name="scenario" value="lease" class="form-radio h-5 w-5 text-purple-600">
-                    <span class="ml-2 text-gray-700">Sewa Lahan</span>
-                </label>
-                <label class="inline-flex items-center">
-                    <input type="radio" id="sharingOption" name="scenario" value="sharing" class="form-radio h-5 w-5 text-purple-600">
-                    <span class="ml-2 text-gray-700">Skema Joint Venture & Bagi Hasil</span>
-                </label>
-            </div>
-        </div>
+    <div class="container flex flex-col lg:flex-row gap-8 bg-white rounded-xl shadow-lg p-8 mb-4">
 
         <!-- Input Section -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <!-- Asumsi Biaya CapEx -->
-            <div class="col-span-1 md:col-span-2 space-y-4 p-6 bg-blue-50 rounded-lg">
-                <h2 class="text-xl font-semibold text-blue-700">Asumsi Biaya Modal (CapEx)</h2>
-                <div id="landPriceInputContainer">
-                    <label for="landPrice" class="block text-sm font-medium text-gray-600">Biaya Akuisisi Lahan (per m²)</label>
-                    <input type="text" id="landPrice" value="Rp 1.500.000" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 text-left">
-                </div>
-                <div id="buildingCostInputContainer">
-                    <label for="buildingCost" class="block text-sm font-medium text-gray-600">Biaya Konstruksi & Fasilitas</label>
-                    <input type="text" id="buildingCost" value="Rp 3.850.000.000" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 text-left">
-                </div>
-            </div>
-
-            <!-- Asumsi Pembiayaan -->
-            <div id="loanAssumptions" class="col-span-1 md:col-span-2 space-y-4 p-6 bg-indigo-50 rounded-lg hidden">
-                <h2 class="text-xl font-semibold text-indigo-700">Asumsi Pembiayaan (Utang)</h2>
-                <div>
-                    <label for="equity" class="block text-sm font-medium text-gray-600">Rasio Ekuitas (Equity Ratio) %</label>
-                    <input type="number" id="equity" value="30" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 text-left">
-                </div>
-                <div>
-                    <label for="loanRate" class="block text-sm font-medium text-gray-600">Suku Bunga Pinjaman Tahunan (%)</label>
-                    <input type="number" id="loanRate" value="8" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 text-left">
-                </div>
-                <div>
-                    <label for="loanTerm" class="block text-sm font-medium text-gray-600">Jangka Waktu Pinjaman (Tahun)</label>
-                    <input type="number" id="loanTerm" value="10" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 text-left">
+        <div class="lg:w-1/2 space-y-6">
+            <header class="text-center space-y-2">
+                <h1 class="text-3xl font-bold text-gray-800">Kalkulator Kelayakan Investasi</h1>
+                <p class="text-gray-500">Menjer Ridge Cabins</p>
+            </header>
+            
+            <!-- Scenario Selection -->
+            <div class="p-4 bg-purple-50 rounded-lg text-center space-y-2">
+                <h2 class="text-xl font-semibold text-purple-700">Pilih Model Investasi</h2>
+                <div class="flex flex-wrap justify-center gap-4">
+                    <label class="inline-flex items-center">
+                        <input type="radio" id="buyOption" name="scenario" value="buy" class="form-radio h-4 w-4 text-purple-600" checked>
+                        <span class="ml-2 text-gray-700 text-sm">Akuisisi Lahan (Tunai)</span>
+                    </label>
+                    <label class="inline-flex items-center">
+                        <input type="radio" id="loanOption" name="scenario" value="loan" class="form-radio h-4 w-4 text-purple-600">
+                        <span class="ml-2 text-gray-700 text-sm">Akuisisi Lahan (Utang)</span>
+                    </label>
+                    <label class="inline-flex items-center">
+                        <input type="radio" id="leaseOption" name="scenario" value="lease" class="form-radio h-4 w-4 text-purple-600">
+                        <span class="ml-2 text-gray-700 text-sm">Sewa Lahan</span>
+                    </label>
+                    <label class="inline-flex items-center">
+                        <input type="radio" id="sharingOption" name="scenario" value="sharing" class="form-radio h-4 w-4 text-purple-600">
+                        <span class="ml-2 text-gray-700 text-sm">Joint Venture</span>
+                    </label>
                 </div>
             </div>
 
-            <!-- Asumsi Profit Sharing -->
-            <div id="sharingAssumptions" class="col-span-1 md:col-span-2 space-y-4 p-6 bg-red-50 rounded-lg hidden">
-                <h2 class="text-xl font-semibold text-red-700">Asumsi Skema Joint Venture & Bagi Hasil</h2>
-                <div>
-                    <label for="investorShare" class="block text-sm font-medium text-gray-600">Porsi Bagi Hasil Investor (%)</label>
-                    <input type="number" id="investorShare" value="70" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 p-2 text-left">
-                </div>
-                 <div>
-                    <label for="landOwnerShare" class="block text-sm font-medium text-gray-600">Porsi Bagi Hasil Pemilik Lahan (%)</label>
-                    <input type="number" id="landOwnerShare" value="30" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 p-2 text-left">
-                </div>
-            </div>
+            <div class="space-y-4">
+                <h2 class="text-lg font-semibold text-gray-700 text-center">Asumsi Parameter</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Biaya Modal & Pembiayaan -->
+                    <div class="space-y-2 p-4 bg-blue-50 rounded-lg">
+                        <h3 class="text-md font-semibold text-blue-700">Modal & Biaya</h3>
+                        <div id="landPriceInputContainer">
+                            <label for="landPrice" class="block text-xs font-medium text-gray-600">Biaya Lahan (per m²)</label>
+                            <input type="text" id="landPrice" value="Rp 1.500.000" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-1.5 text-xs">
+                        </div>
+                        <div id="landLeaseInputContainer" class="hidden">
+                            <label for="landLeaseCost" class="block text-xs font-medium text-gray-600">Biaya Sewa Lahan (tahunan)</label>
+                            <input type="text" id="landLeaseCost" value="Rp 500.000.000" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-1.5 text-xs">
+                        </div>
+                        <div>
+                            <label for="buildingCost" class="block text-xs font-medium text-gray-600">Biaya Konstruksi & Fasilitas</label>
+                            <input type="text" id="buildingCost" value="Rp 3.850.000.000" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-1.5 text-xs">
+                        </div>
+                         <div id="loanAssumptions" class="space-y-2 hidden">
+                            <div>
+                                <label for="equity" class="block text-xs font-medium text-gray-600">Rasio Ekuitas (%)</label>
+                                <input type="number" id="equity" value="30" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-1.5 text-xs">
+                            </div>
+                            <div>
+                                <label for="loanRate" class="block text-xs font-medium text-gray-600">Bunga Pinjaman Tahunan (%)</label>
+                                <input type="number" id="loanRate" value="8" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-1.5 text-xs">
+                            </div>
+                            <div>
+                                <label for="loanTerm" class="block text-xs font-medium text-gray-600">Jangka Waktu Pinjaman (Tahun)</label>
+                                <input type="number" id="loanTerm" value="10" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-1.5 text-xs">
+                            </div>
+                        </div>
+                        <div id="sharingAssumptions" class="space-y-2 hidden">
+                            <div>
+                                <label for="investorShare" class="block text-xs font-medium text-gray-600">Porsi Bagi Hasil Investor (%)</label>
+                                <input type="number" id="investorShare" value="70" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-1.5 text-xs">
+                            </div>
+                             <div>
+                                <label for="landOwnerShare" class="block text-xs font-medium text-gray-600">Porsi Bagi Hasil Pemilik Lahan (%)</label>
+                                <input type="number" id="landOwnerShare" value="30" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-1.5 text-xs">
+                            </div>
+                        </div>
+                    </div>
 
-            <!-- Asumsi Pendapatan -->
-            <div class="col-span-1 md:col-span-2 space-y-4 p-6 bg-green-50 rounded-lg">
-                <h2 class="text-xl font-semibold text-green-700">Asumsi Pendapatan</h2>
-                <div>
-                    <label for="adrTipe1" class="block text-sm font-medium text-gray-600">ADR (Average Daily Rate) Tipe 1 (9 unit)</label>
-                    <input type="text" id="adrTipe1" value="Rp 900.000" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 p-2 text-left">
-                </div>
-                <div>
-                    <label for="adrTipe2" class="block text-sm font-medium text-gray-600">ADR (Average Daily Rate) Tipe 2 (5 unit)</label>
-                    <input type="text" id="adrTipe2" value="Rp 750.000" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 p-2 text-left">
-                </div>
-                <div>
-                    <label for="occupancy" class="block text-sm font-medium text-gray-600">Tingkat Okupansi Tahunan (%)</label>
-                    <input type="number" id="occupancy" value="50" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 p-2 text-left">
-                </div>
-                <div>
-                    <label for="fnbRevenue" class="block text-sm font-medium text-gray-600">Pendapatan F&B & Lainnya (% dari Total Akomodasi)</label>
-                    <input type="number" id="fnbRevenue" value="10" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 p-2 text-left">
-                </div>
-            </div>
+                    <!-- Pendapatan & Biaya Operasional -->
+                    <div class="space-y-2 p-4 bg-green-50 rounded-lg">
+                        <h3 class="text-md font-semibold text-green-700">Pendapatan & OPEX</h3>
+                        <div>
+                            <label for="adrTipe1" class="block text-xs font-medium text-gray-600">ADR Tipe 1 (9 unit)</label>
+                            <input type="text" id="adrTipe1" value="Rp 900.000" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-1.5 text-xs">
+                        </div>
+                        <div>
+                            <label for="adrTipe2" class="block text-xs font-medium text-gray-600">ADR Tipe 2 (5 unit)</label>
+                            <input type="text" id="adrTipe2" value="Rp 750.000" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-1.5 text-xs">
+                        </div>
+                        <div>
+                            <label for="occupancy" class="block text-xs font-medium text-gray-600">Okupansi Tahunan (%)</label>
+                            <input type="number" id="occupancy" value="50" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-1.5 text-xs">
+                        </div>
+                        <div>
+                            <label for="fnbRevenue" class="block text-xs font-medium text-gray-600">Pendapatan F&B (% dari Akomodasi)</label>
+                            <input type="number" id="fnbRevenue" value="10" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-1.5 text-xs">
+                        </div>
+                        <div>
+                            <label for="opexRate" class="block text-xs font-medium text-gray-600">Rasio OPEX Variabel (%)</label>
+                            <input type="number" id="opexRate" value="15" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-1.5 text-xs">
+                        </div>
+                         <div>
+                            <label for="fixedOpex" class="block text-xs font-medium text-gray-600">OPEX Tetap (tahunan)</label>
+                            <input type="text" id="fixedOpex" value="Rp 500.000.000" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-1.5 text-xs">
+                        </div>
+                        <div>
+                            <label for="maintenanceRate" class="block text-xs font-medium text-gray-600">Biaya Pemeliharaan Tahunan (%)</label>
+                            <input type="number" id="maintenanceRate" value="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-1.5 text-xs">
+                        </div>
+                    </div>
 
-            <!-- Asumsi OPEX & Pertumbuhan -->
-            <div class="col-span-1 md:col-span-2 space-y-4 p-6 bg-yellow-50 rounded-lg">
-                <h2 class="text-xl font-semibold text-yellow-700">Asumsi Biaya Operasional (OPEX) & Pertumbuhan</h2>
-                <div id="landLeaseInputContainer" class="hidden">
-                    <label for="landLeaseCost" class="block text-sm font-medium text-gray-600">Biaya Sewa Lahan (per tahun)</label>
-                    <input type="text" id="landLeaseCost" value="Rp 500.000.000" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-yellow-500 focus:ring-yellow-500 p-2 text-left">
+                    <!-- Pertumbuhan & Lain-lain -->
+                    <div class="col-span-1 md:col-span-2 space-y-2 p-4 bg-yellow-50 rounded-lg">
+                        <h3 class="text-md font-semibold text-yellow-700">Pertumbuhan & Keuangan</h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                             <div>
+                                <label for="revenueGrowth" class="block text-xs font-medium text-gray-600">Pertumbuhan Pendapatan Tahunan (%)</label>
+                                <input type="number" id="revenueGrowth" value="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-1.5 text-xs">
+                            </div>
+                            <div>
+                                <label for="opexGrowth" class="block text-xs font-medium text-gray-600">Pertumbuhan OPEX Tahunan (%)</label>
+                                <input type="number" id="opexGrowth" value="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-1.5 text-xs">
+                            </div>
+                            <div>
+                                <label for="taxRate" class="block text-xs font-medium text-gray-600">Tingkat Pajak Korporasi (%)</label>
+                                <input type="number" id="taxRate" value="22" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-1.5 text-xs">
+                            </div>
+                            <div>
+                                <label for="discountRate" class="block text-xs font-medium text-gray-600">Tingkat Diskonto (%)</label>
+                                <input type="number" id="discountRate" value="11" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-1.5 text-xs">
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div>
-                    <label for="opexRate" class="block text-sm font-medium text-gray-600">Rasio OPEX Variabel (% dari Total Pendapatan)</label>
-                    <input type="number" id="opexRate" value="15" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-yellow-500 focus:ring-yellow-500 p-2 text-left">
-                </div>
-                <div>
-                    <label for="fixedOpex" class="block text-sm font-medium text-gray-600">OPEX Tetap (per tahun)</label>
-                    <input type="text" id="fixedOpex" value="Rp 500.000.000" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-yellow-500 focus:ring-yellow-500 p-2 text-left">
-                </div>
-                 <div>
-                    <label for="maintenanceRate" class="block text-sm font-medium text-gray-600">Biaya Pemeliharaan Tahunan (% dari Biaya Konstruksi)</label>
-                    <input type="number" id="maintenanceRate" value="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-yellow-500 focus:ring-yellow-500 p-2 text-left">
-                </div>
-                <div>
-                    <label for="revenueGrowth" class="block text-sm font-medium text-gray-600">Tingkat Pertumbuhan Pendapatan Tahunan (%)</label>
-                    <input type="number" id="revenueGrowth" value="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-yellow-500 focus:ring-yellow-500 p-2 text-left">
-                </div>
-                 <div>
-                    <label for="opexGrowth" class="block text-sm font-medium text-gray-600">Tingkat Pertumbuhan OPEX Tahunan (%)</label>
-                    <input type="number" id="opexGrowth" value="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-yellow-500 focus:ring-yellow-500 p-2 text-left">
-                </div>
-                <div>
-                    <label for="taxRate" class="block text-sm font-medium text-gray-600">Tingkat Pajak Korporasi (%)</label>
-                    <input type="number" id="taxRate" value="22" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-yellow-500 focus:ring-yellow-500 p-2 text-left">
-                </div>
-                <div>
-                    <label for="discountRate" class="block text-sm font-medium text-gray-600">Tingkat Diskonto (Discount Rate) (%)</label>
-                    <input type="number" id="discountRate" value="11" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-yellow-500 focus:ring-yellow-500 p-2 text-left">
-                </div>
+
+                <!-- Action Button -->
+                <button id="calculateBtn" class="w-full bg-blue-600 text-white py-2 rounded-lg font-semibold shadow-md hover:bg-blue-700 transition-colors duration-200 text-sm">
+                    <span id="buttonText">Lakukan Proyeksi</span>
+                    <span id="buttonSpinner" class="hidden spinner ml-2">
+                        <svg class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                    </span>
+                </button>
             </div>
         </div>
-        
-        <!-- Action Button -->
-        <button id="calculateBtn" class="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold shadow-md hover:bg-blue-700 transition-colors duration-200">
-            <span id="buttonText">Lakukan Proyeksi</span>
-            <span id="buttonSpinner" class="hidden spinner">
-                <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-            </span>
-        </button>
 
-        <!-- Disclaimer Section -->
-        <div class="space-y-4 p-4 bg-red-50 rounded-lg text-sm text-center text-red-700 mt-4">
-            <p class="font-semibold">Disclaimer:</p>
-            <p>Hasil perhitungan ini adalah estimasi awal berdasarkan asumsi yang Anda masukkan. Proyeksi keuangan aktual dapat bervariasi secara signifikan. Kalkulator ini berfungsi sebagai alat analisis pendahuluan dan bukan pengganti studi kelayakan bisnis yang komprehensif.</p>
-        </div>
-
-        <!-- Minimalist Infographic Section (ROI Gauge) -->
-        <div class="space-y-6 mt-8 p-6 bg-gray-50 rounded-xl shadow text-center">
-            <h2 class="text-xl font-bold text-gray-700">Indikator Kinerja Utama (KPIs)</h2>
-            <div class="flex flex-col items-center">
-                <svg id="roiGauge" class="w-36 h-36" viewBox="0 0 120 120">
+        <!-- Results Section -->
+        <div class="lg:w-1/2 space-y-6 flex flex-col">
+            <h2 class="text-xl font-bold text-gray-700 text-center">Indikator Kinerja Utama</h2>
+            
+            <!-- Minimalist Infographic Section (ROI Gauge) -->
+            <div class="flex-grow flex flex-col items-center justify-center p-4 bg-gray-50 rounded-xl shadow text-center">
+                 <svg id="roiGauge" class="w-36 h-36 lg:w-48 lg:h-48" viewBox="0 0 120 120">
                     <circle class="text-gray-200" stroke-width="10" stroke="currentColor" fill="transparent" r="50" cx="60" cy="60"></circle>
                     <circle id="roiArc" class="text-green-500 transition-all duration-700 ease-in-out" stroke-width="10" stroke="currentColor" fill="transparent" r="50" cx="60" cy="60" style="transform: rotate(-90deg); transform-origin: 50% 50%;"></circle>
                     <text id="roiText" x="60" y="60" text-anchor="middle" dominant-baseline="middle" class="text-2xl font-bold text-gray-800">0%</text>
                     <text x="60" y="80" text-anchor="middle" dominant-baseline="middle" class="text-sm font-medium text-gray-500">ROI</text>
                 </svg>
-                <div class="mt-4 text-sm text-gray-600">
-                    <p>ROI (Return on Investment) lebih dari 100% menandakan pengembalian modal pada tahun pertama.</p>
+                <p class="mt-4 text-sm text-gray-600">
+                    ROI (Return on Investment) lebih dari 100% menandakan pengembalian modal pada tahun pertama.
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="bg-gray-50 rounded-xl p-4 text-center shadow">
+                    <p class="text-xs text-gray-500">Total Biaya Modal (CapEx)</p>
+                    <p id="totalCapex" class="text-lg font-bold text-gray-800">Rp 0</p>
+                </div>
+                <div class="bg-gray-50 rounded-xl p-4 text-center shadow">
+                    <p class="text-xs text-gray-500">Total Pendapatan Proyek (Tahun 1)</p>
+                    <p id="totalRevenue" class="text-lg font-bold text-gray-800">Rp 0</p>
+                </div>
+                <div class="bg-gray-50 rounded-xl p-4 text-center shadow">
+                    <p class="text-xs text-gray-500">Laba Bersih Setelah Pajak (Tahun 1)</p>
+                    <p id="netProfit" class="text-lg font-bold text-gray-800">Rp 0</p>
+                </div>
+                <div class="bg-gray-50 rounded-xl p-4 text-center shadow">
+                    <p class="text-xs text-gray-500">NPV (Net Present Value) (10 Tahun)</p>
+                    <p id="npv" class="text-lg font-bold text-gray-800">Rp 0</p>
+                </div>
+                <div class="bg-gray-50 rounded-xl p-4 text-center shadow">
+                    <p class="text-xs text-gray-500">ROI (Return on Investment) (Tahun 1)</p>
+                    <p id="roi" class="text-lg font-bold text-gray-800">0%</p>
+                </div>
+                <div class="bg-gray-50 rounded-xl p-4 text-center shadow">
+                    <p class="text-xs text-gray-500">Periode Pengembalian (Payback Period)</p>
+                    <p id="payback" class="text-lg font-bold text-gray-800">0 tahun</p>
+                </div>
+                <div id="landOwnerProfitElContainer" class="bg-gray-50 rounded-xl p-4 text-center shadow hidden">
+                    <p class="text-xs text-gray-500">Laba Bersih untuk Pemilik Lahan (Tahun 1)</p>
+                    <p id="landOwnerProfit" class="text-lg font-bold text-gray-800">Rp 0</p>
                 </div>
             </div>
         </div>
 
-        <!-- Results Section -->
-        <div id="results" class="space-y-6">
-            <h2 class="text-xl font-bold text-center text-gray-700">Hasil Proyeksi Keuangan</h2>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div class="bg-gray-50 rounded-xl p-4 text-center shadow">
-                    <p class="text-sm text-gray-500">Total Biaya Modal (CapEx)</p>
-                    <p id="totalCapex" class="text-xl font-bold text-gray-800">Rp 0</p>
-                </div>
-                <div class="bg-gray-50 rounded-xl p-4 text-center shadow">
-                    <p class="text-sm text-gray-500">Total Pendapatan Proyek (Tahun 1)</p>
-                    <p id="totalRevenue" class="text-xl font-bold text-gray-800">Rp 0</p>
-                </div>
-                <div class="bg-gray-50 rounded-xl p-4 text-center shadow">
-                    <p class="text-sm text-gray-500">Laba Bersih Setelah Pajak (Tahun 1)</p>
-                    <p id="netProfit" class="text-xl font-bold text-gray-800">Rp 0</p>
-                </div>
-                <div class="bg-gray-50 rounded-xl p-4 text-center shadow">
-                    <p class="text-sm text-gray-500">NPV (Net Present Value) (10 Tahun)</p>
-                    <p id="npv" class="text-xl font-bold text-gray-800">Rp 0</p>
-                </div>
-                <div class="bg-gray-50 rounded-xl p-4 text-center shadow">
-                    <p class="text-sm text-gray-500">ROI (Return on Investment) (Tahun 1)</p>
-                    <p id="roi" class="text-xl font-bold text-gray-800">0%</p>
-                </div>
-                <div class="bg-gray-50 rounded-xl p-4 text-center shadow">
-                    <p class="text-sm text-gray-500">Periode Pengembalian (Payback Period)</p>
-                    <p id="payback" class="text-xl font-bold text-gray-800">0 tahun</p>
-                </div>
-                <div id="landOwnerProfitElContainer" class="col-span-1 md:col-span-3 bg-gray-50 rounded-xl p-4 text-center shadow hidden">
-                    <p class="text-sm text-gray-500">Laba Bersih untuk Pemilik Lahan (Tahun 1)</p>
-                    <p id="landOwnerProfit" class="text-xl font-bold text-gray-800">Rp 0</p>
-                </div>
-            </div>
-        </div>
+    </div>
 
-        <!-- Scientific Basis Section -->
-        <div class="space-y-6 p-6 bg-gray-50 rounded-xl shadow mt-8">
-            <h2 class="text-xl font-semibold text-gray-700">Landasan Ilmiah & Sumber Data Parameter</h2>
-            <p class="text-sm text-gray-600">
-                Kalkulator ini mengintegrasikan empat model bisnis utama untuk analisis kelayakan finansial. Angka-angka asumsi didasarkan pada kombinasi data dari dokumen yang disediakan, praktik industri, dan prinsip-prinsip keilmuan.
-            </p>
-            <ul class="list-disc list-inside space-y-2 text-sm text-gray-600">
+    <!-- Footer Section -->
+    <footer class="w-full mt-4 flex flex-col items-center text-xs text-gray-600 space-y-4">
+        <div class="max-w-4xl space-y-4 p-4 bg-red-50 rounded-lg text-sm text-center text-red-700 shadow-md">
+            <p class="font-semibold">Disclaimer:</p>
+            <p>Hasil perhitungan ini adalah estimasi awal berdasarkan asumsi yang Anda masukkan. Proyeksi keuangan aktual dapat bervariasi secara signifikan. Kalkulator ini berfungsi sebagai alat analisis pendahuluan dan bukan pengganti studi kelayakan bisnis yang komprehensif.</p>
+        </div>
+        <div class="max-w-4xl space-y-2 p-4 bg-gray-200 rounded-lg text-sm text-center text-gray-800 shadow-md">
+            <h2 class="text-sm font-semibold text-gray-800 text-center">Landasan Ilmiah dan Sumber Data</h2>
+            <p class="text-left mb-2">Perhitungan ini didasarkan pada prinsip-prinsip keilmuan, model bisnis, dan regulasi yang lazim dalam analisis kelayakan investasi. Berikut adalah rincian landasan teoritis dan sumber data yang digunakan:</p>
+            <ul class="list-disc list-inside space-y-2 text-left">
                 <li>
-                    <strong>Asumsi Biaya Modal (CapEx):</strong>
-                    Biaya modal (Capital Expenditures) mencakup pengeluaran untuk lahan dan konstruksi. Nilai yang digunakan dalam kalkulator ini adalah contoh realistis yang dapat disesuaikan.
+                    <strong>Analisis Keuangan dan Investasi:</strong> Metrik seperti EBIT, NPAT, NPV, dan ROI adalah metrik standar dalam akuntansi manajerial dan capital budgeting. Model ini mengintegrasikan proyeksi pendapatan, biaya operasional, dan biaya modal untuk menilai profitabilitas dan efisiensi investasi.
                 </li>
                 <li>
-                    <strong>Asumsi Pendapatan:</strong>
-                    Tingkat Okupansi dan ADR (Average Daily Rate) adalah metrik kunci dalam industri perhotelan dan pariwisata. Asumsi yang digunakan mencerminkan skenario pasar yang seimbang.
+                    <strong>Sumber Data Proyeksi:</strong> Asumsi spesifik (misalnya, harga lahan, biaya konstruksi, harga kamar (ADR), dan tingkat okupansi) direplikasi dari dokumen terverifikasi, yaitu Audit Kelayakan Investasi – Menjer Ridge Cabins (final). Tingkat pertumbuhan pendapatan dan biaya operasional dipilih secara konservatif sebagai praktik terbaik dalam pemodelan keuangan.
                 </li>
                 <li>
-                    <strong>Asumsi Biaya Operasional (OPEX):</strong>
-                    Biaya operasional (Operating Expenses) dipisahkan menjadi biaya tetap dan variabel. Pemodelan ini sejalan dengan prinsip-prinsip **akuntansi manajerial** yang membedakan biaya berdasarkan perilaku relatif terhadap volume penjualan.
+                    <strong>Landasan Hukum Terkait Pajak:</strong> Asumsi tingkat pajak korporasi sebesar 22% mengacu pada Undang-Undang Nomor 7 Tahun 2021 tentang Harmonisasi Peraturan Perpajakan (UU HPP) yang berlaku di Indonesia. Ini merupakan regulasi vital yang memengaruhi profitabilitas bersih suatu entitas bisnis.
                 </li>
-                <li>
-                    <strong>Metode Penilaian Proyek:</strong>
-                    Kalkulator ini menggunakan dua metrik kunci dalam **analisis investasi modal**:
-                    <ul class="list-disc list-inside ml-6 text-gray-600">
-                        <li>
-                            **Net Present Value (NPV):** Mengukur nilai kini dari arus kas yang diharapkan dari proyek.
-                        </li>
-                        <li>
-                            **Payback Period:** Menghitung waktu yang dibutuhkan untuk mengembalikan modal investasi awal.
-                        </li>
-                    </ul>
-                    Tingkat diskonto yang digunakan mewakili **biaya modal (cost of capital)** dan tingkat risiko yang terkait dengan proyek ini.
-                </li>
-                <li>
-                    <strong>Analisis Sensitivitas:</strong>
-                    Kalkulator ini memungkinkan analisis sensitivitas dengan mengubah variabel-variabel utama untuk mengeksplorasi kelayakan proyek di bawah skenario yang berbeda. Ini adalah praktik standar dalam **analisis keuangan korporasi** untuk mengukur ketahanan proyek terhadap perubahan asumsi.
+                 <li>
+                    <strong>Metode Penilaian Proyek:</strong> Perhitungan NPV menggunakan tingkat diskonto (11%) yang merepresentasikan biaya modal atau imbal hasil minimum yang diharapkan investor. Periode proyeksi 10 tahun dipilih untuk mencakup siklus hidup proyek dan memberikan gambaran jangka panjang yang komprehensif.
                 </li>
             </ul>
         </div>
-    </div>
-
+    </footer>
+    
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const luasLahan = 3072.9;
             const jumlahTipe1 = 9;
             const jumlahTipe2 = 5;
             const annualDays = 365;
-            const projectionPeriod = 10; // 10 years for NPV calculation
+            const projectionPeriod = 10;
 
-            // Get all input and result elements
             const buyOption = document.getElementById('buyOption');
             const loanOption = document.getElementById('loanOption');
             const leaseOption = document.getElementById('leaseOption');
@@ -343,11 +319,9 @@
             const npvEl = document.getElementById('npv');
             const landOwnerProfitEl = document.getElementById('landOwnerProfit');
             
-            // ROI Gauge elements
             const roiArc = document.getElementById('roiArc');
             const roiText = document.getElementById('roiText');
 
-            // Format number to Indonesian Rupiah
             const formatter = new Intl.NumberFormat('id-ID', {
                 style: 'currency',
                 currency: 'IDR',
@@ -358,20 +332,17 @@
                 maximumFractionDigits: 2
             });
 
-            // Function to format number as Rupiah string
             const formatRupiah = (value) => {
                 const number = parseFloat(value);
                 if (isNaN(number)) return '';
                 return `Rp ${number.toLocaleString('id-ID')}`;
             };
 
-            // Function to unformat Rupiah string to number
             const unformatRupiah = (text) => {
                 const cleanedText = text.replace(/[^,\d]/g, '').replace(/,/g, '.');
                 return parseFloat(cleanedText);
             };
 
-            // Set initial formatted values for text inputs
             landPriceInput.value = formatRupiah(unformatRupiah(landPriceInput.value));
             buildingCostInput.value = formatRupiah(unformatRupiah(buildingCostInput.value));
             adrTipe1Input.value = formatRupiah(unformatRupiah(adrTipe1Input.value));
@@ -405,7 +376,6 @@
             formatInputs([equityInput, loanRateInput, loanTermInput, investorShareInput, landOwnerShareInput, occupancyInput, fnbRevenueInput, opexRateInput, maintenanceRateInput, revenueGrowthInput, opexGrowthInput, taxRateInput, discountRateInput], false);
 
 
-            // Function to update input visibility based on scenario
             const updateInputVisibility = () => {
                 const isSharingScenario = sharingOption.checked;
                 const isLoanScenario = loanOption.checked;
@@ -444,7 +414,6 @@
                 const isLoanScenario = loanOption.checked;
                 const isSharingScenario = sharingOption.checked;
                 
-                // Get common values, unformatting rupiah strings
                 const buildingCost = unformatRupiah(buildingCostInput.value) || 0;
                 const adrTipe1 = unformatRupiah(adrTipe1Input.value) || 0;
                 const adrTipe2 = unformatRupiah(adrTipe2Input.value) || 0;
@@ -492,7 +461,6 @@
                     landLeaseCost = unformatRupiah(landLeaseCostInput.value) || 0;
                 }
 
-                // Year 1 Calculations (for the entire project)
                 const accommodationRevenueY1 = (jumlahTipe1 * adrTipe1 * annualDays * occupancy) + (jumlahTipe2 * adrTipe2 * annualDays * occupancy);
                 const totalRevenueY1 = accommodationRevenueY1 + (accommodationRevenueY1 * fnbRevenuePercent);
                 const maintenanceCostY1 = buildingCost * maintenanceRate;
@@ -500,17 +468,14 @@
                 const ebitY1 = totalRevenueY1 - totalOpexY1;
                 const netProfitProjectY1 = ebitY1 * (1 - taxRate);
 
-                // Calculate investor's share of profit and their ROI/NPV
                 let netProfitInvestorY1 = netProfitProjectY1 * investorSharePercent;
                 const roi = (totalCapex > 0) ? (netProfitInvestorY1 / totalCapex) * 100 : 0;
                 
-                // Calculate land owner's profit share
                 let landOwnerProfitY1 = 0;
                 if (isSharingScenario) {
                      landOwnerProfitY1 = netProfitProjectY1 * landOwnerSharePercent;
                 }
                 
-                // NPV and Payback Period calculation over 10 years
                 let npv = 0;
                 let cumulativeCashFlow = 0;
                 let paybackYears = 'Tidak Akan Kembali Modal';
@@ -547,7 +512,6 @@
                     projectedLandLeaseCost *= (1 + opexGrowth);
                 }
 
-                // Display results in text format
                 totalCapexEl.textContent = formatter.format(totalCapex);
                 totalRevenueEl.textContent = formatter.format(totalRevenueY1);
                 netProfitEl.textContent = formatter.format(netProfitInvestorY1);
@@ -564,16 +528,14 @@
                     roiEl.textContent = '0%';
                 }
 
-                // Update ROI Gauge
-                const circumference = 2 * Math.PI * 50; // 2 * PI * radius
-                let roiValue = Math.min(Math.max(roi, 0), 200); // Clamp ROI value to a range (e.g., 0-200%)
+                const circumference = 2 * Math.PI * 50;
+                let roiValue = Math.min(Math.max(roi, 0), 200);
                 const offset = circumference - (roiValue / 200 * circumference);
                 
                 roiArc.style.strokeDasharray = circumference;
                 roiArc.style.strokeDashoffset = offset;
                 roiText.textContent = `${Math.round(roiValue)}%`;
 
-                // Change gauge color based on ROI
                 if (roi > 0) {
                     roiArc.classList.remove('text-red-500');
                     roiArc.classList.add('text-green-500');
@@ -584,44 +546,34 @@
             };
 
             const handleCalculateClick = () => {
-                // Set loading state
                 buttonText.textContent = 'Menghitung...';
                 buttonSpinner.classList.remove('hidden');
                 calculateBtn.disabled = true;
                 calculateBtn.classList.add('bg-blue-400', 'cursor-not-allowed');
                 calculateBtn.classList.remove('hover:bg-blue-700');
 
-                // Simulate a delay for a better user experience
                 setTimeout(() => {
                     calculateMetrics();
-
-                    // Revert button state
                     buttonText.textContent = 'Lakukan Proyeksi';
                     buttonSpinner.classList.add('hidden');
                     calculateBtn.disabled = false;
                     calculateBtn.classList.remove('bg-blue-400', 'cursor-not-allowed');
                     calculateBtn.classList.add('hover:bg-blue-700');
-                }, 1500); // 1.5 second delay
+                }, 1500);
             };
 
-            // Initial setup
             updateInputVisibility();
-
-            // Attach event listeners to scenario options
             buyOption.addEventListener('change', updateInputVisibility);
             loanOption.addEventListener('change', updateInputVisibility);
             leaseOption.addEventListener('change', updateInputVisibility);
             sharingOption.addEventListener('change', updateInputVisibility);
-
-            // Attach event listener to the button
             calculateBtn.addEventListener('click', handleCalculateClick);
 
-            // Add event listener for 'Enter' key press to move to the next input
             const allInputs = document.querySelectorAll('input[type="text"], input[type="number"]');
             allInputs.forEach((input, index) => {
                 input.addEventListener('keydown', (e) => {
                     if (e.key === 'Enter') {
-                        e.preventDefault(); // Mencegah submit form atau eksekusi perintah
+                        e.preventDefault();
                         const nextInput = allInputs[index + 1];
                         if (nextInput) {
                             nextInput.focus();
