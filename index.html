@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalkulator Bisnis Menjer Ridge Cabins</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8;
+            color: #1a202c;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        .card {
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+        }
+        /* Style for number input spin buttons */
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type="number"] {
+            -moz-appearance: textfield;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
+
+    <div class="container bg-white rounded-xl shadow-lg p-8 space-y-8">
+        <!-- Header Section -->
+        <header class="text-center space-y-2">
+            <h1 class="text-3xl font-bold text-gray-800">Kalkulator Kelayakan Bisnis</h1>
+            <p class="text-gray-500">Menjer Ridge Cabins</p>
+            <p class="text-sm text-gray-400">Silakan ubah asumsi di bawah untuk melihat proyeksi keuangan secara instan.</p>
+        </header>
+
+        <!-- Input Section -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Asumsi Biaya CapEx -->
+            <div class="col-span-1 md:col-span-2 space-y-4 p-6 bg-blue-50 rounded-lg">
+                <h2 class="text-xl font-semibold text-blue-700">Asumsi Biaya (CapEx)</h2>
+                <div>
+                    <label for="landPrice" class="block text-sm font-medium text-gray-600">Harga Lahan (per m²)</label>
+                    <input type="number" id="landPrice" value="1500000" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2">
+                </div>
+                <div>
+                    <label for="buildingCost" class="block text-sm font-medium text-gray-600">Biaya Bangunan & Fasilitas</label>
+                    <input type="number" id="buildingCost" value="3850000000" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2">
+                </div>
+            </div>
+
+            <!-- Asumsi Pendapatan -->
+            <div class="col-span-1 md:col-span-2 space-y-4 p-6 bg-green-50 rounded-lg">
+                <h2 class="text-xl font-semibold text-green-700">Asumsi Pendapatan</h2>
+                <div>
+                    <label for="adrTipe1" class="block text-sm font-medium text-gray-600">ADR Tipe 1 (9 unit)</label>
+                    <input type="number" id="adrTipe1" value="900000" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 p-2">
+                </div>
+                <div>
+                    <label for="adrTipe2" class="block text-sm font-medium text-gray-600">ADR Tipe 2 (5 unit)</label>
+                    <input type="number" id="adrTipe2" value="750000" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 p-2">
+                </div>
+                <div>
+                    <label for="occupancy" class="block text-sm font-medium text-gray-600">Okupansi Tahunan (%)</label>
+                    <input type="number" id="occupancy" value="50" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 p-2">
+                </div>
+                <div>
+                    <label for="fnbRevenue" class="block text-sm font-medium text-gray-600">Pendapatan F&B (% dari Akomodasi)</label>
+                    <input type="number" id="fnbRevenue" value="10" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 p-2">
+                </div>
+            </div>
+
+            <!-- Asumsi OPEX & Pertumbuhan -->
+            <div class="col-span-1 md:col-span-2 space-y-4 p-6 bg-yellow-50 rounded-lg">
+                <h2 class="text-xl font-semibold text-yellow-700">Asumsi Operasional & Pertumbuhan</h2>
+                <div>
+                    <label for="opexRate" class="block text-sm font-medium text-gray-600">OPEX Variabel (% dari Total Revenue)</label>
+                    <input type="number" id="opexRate" value="15" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-yellow-500 focus:ring-yellow-500 p-2">
+                </div>
+                <div>
+                    <label for="fixedOpex" class="block text-sm font-medium text-gray-600">OPEX Tetap (per tahun)</label>
+                    <input type="number" id="fixedOpex" value="500000000" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-yellow-500 focus:ring-yellow-500 p-2">
+                </div>
+                 <div>
+                    <label for="maintenanceRate" class="block text-sm font-medium text-gray-600">Biaya Pemeliharaan (% dari Biaya Bangunan)</label>
+                    <input type="number" id="maintenanceRate" value="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-yellow-500 focus:ring-yellow-500 p-2">
+                </div>
+                <div>
+                    <label for="revenueGrowth" class="block text-sm font-medium text-gray-600">Tingkat Pertumbuhan Revenue Tahunan (%)</label>
+                    <input type="number" id="revenueGrowth" value="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-yellow-500 focus:ring-yellow-500 p-2">
+                </div>
+                 <div>
+                    <label for="opexGrowth" class="block text-sm font-medium text-gray-600">Tingkat Pertumbuhan OPEX Tahunan (%)</label>
+                    <input type="number" id="opexGrowth" value="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-yellow-500 focus:ring-yellow-500 p-2">
+                </div>
+                <div>
+                    <label for="taxRate" class="block text-sm font-medium text-gray-600">Tingkat Pajak Korporasi (%)</label>
+                    <input type="number" id="taxRate" value="22" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-yellow-500 focus:ring-yellow-500 p-2">
+                </div>
+                <div>
+                    <label for="discountRate" class="block text-sm font-medium text-gray-600">Tingkat Diskonto (%)</label>
+                    <input type="number" id="discountRate" value="11" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-yellow-500 focus:ring-yellow-500 p-2">
+                </div>
+            </div>
+        </div>
+        
+        <!-- Action Button -->
+        <button id="calculateBtn" class="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold shadow-md hover:bg-blue-700 transition-colors duration-200">
+            Hitung Proyeksi
+        </button>
+
+        <!-- Disclaimer Section -->
+        <div class="space-y-4 p-4 bg-red-50 rounded-lg text-sm text-center text-red-700 mt-4">
+            <p class="font-semibold">Disclaimer:</p>
+            <p>Hasil perhitungan ini adalah estimasi kasar berdasarkan asumsi yang Anda masukkan. Proyeksi keuangan aktual dapat bervariasi secara signifikan karena faktor-faktor pasar yang dinamis dan kondisi bisnis yang tidak terduga. Kalkulator ini berfungsi sebagai alat bantu analisis awal dan bukan pengganti studi kelayakan bisnis yang komprehensif.</p>
+        </div>
+
+        <!-- Results Section -->
+        <div id="results" class="space-y-6">
+            <h2 class="text-xl font-bold text-center text-gray-700">Hasil Proyeksi</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="bg-gray-50 rounded-xl p-4 text-center shadow">
+                    <p class="text-sm text-gray-500">Total CapEx</p>
+                    <p id="totalCapex" class="text-xl font-bold text-gray-800">Rp 0</p>
+                </div>
+                <div class="bg-gray-50 rounded-xl p-4 text-center shadow">
+                    <p class="text-sm text-gray-500">Total Revenue (Tahun 1)</p>
+                    <p id="totalRevenue" class="text-xl font-bold text-gray-800">Rp 0</p>
+                </div>
+                <div class="bg-gray-50 rounded-xl p-4 text-center shadow">
+                    <p class="text-sm text-gray-500">Laba Bersih Setelah Pajak (Tahun 1)</p>
+                    <p id="netProfit" class="text-xl font-bold text-gray-800">Rp 0</p>
+                </div>
+                <div class="bg-gray-50 rounded-xl p-4 text-center shadow">
+                    <p class="text-sm text-gray-500">NPV (10 Tahun)</p>
+                    <p id="npv" class="text-xl font-bold text-gray-800">Rp 0</p>
+                </div>
+                <div class="bg-gray-50 rounded-xl p-4 text-center shadow">
+                    <p class="text-sm text-gray-500">ROI (Tahun 1)</p>
+                    <p id="roi" class="text-xl font-bold text-gray-800">0%</p>
+                </div>
+                <div class="bg-gray-50 rounded-xl p-4 text-center shadow">
+                    <p class="text-sm text-gray-500">Payback Period</p>
+                    <p id="payback" class="text-xl font-bold text-gray-800">0 tahun</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scientific Basis Section -->
+        <div class="space-y-6 p-6 bg-gray-50 rounded-xl shadow mt-8">
+            <h2 class="text-xl font-semibold text-gray-700">Dasar Ilmiah dan Sumber Data Parameter</h2>
+            <p class="text-sm text-gray-600">
+                Angka-angka default pada kalkulator ini didasarkan pada kombinasi data faktual dari dokumen yang disediakan, praktik industri standar, dan teori keilmuan dalam analisis keuangan.
+            </p>
+            <ul class="list-disc list-inside space-y-2 text-sm text-gray-600">
+                <li>
+                    <strong>Asumsi CapEx (Harga Lahan & Biaya Bangunan):</strong>
+                    Angka-angka ini direplikasi dari **Skenario B** yang tercantum dalam dokumen audit kelayakan investasi Anda, yang mencerminkan asumsi biaya yang lebih tinggi untuk lahan dan bangunan.
+                </li>
+                <li>
+                    <strong>Asumsi Pendapatan (ADR & Okupansi):</strong>
+                    Nilai **ADR (Average Daily Rate)** dan tingkat **okupansi 50%** diambil dari **Skenario Moderat** dalam dokumen yang sama. Ini adalah asumsi yang seimbang dan realistis untuk proyeksi awal.
+                </li>
+                <li>
+                    <strong>Asumsi OPEX (Variabel & Tetap):</strong>
+                    Pemisahan biaya menjadi variabel dan tetap adalah praktik standar dalam **akuntansi manajerial**. Biaya variabel (15%) diasumsikan untuk pengeluaran yang bergantung pada volume (misalnya, listrik, air, *amenities* tamu). Biaya tetap (Rp 500 Juta) mewakili pengeluaran yang konstan seperti gaji dan administrasi.
+                </li>
+                <li>
+                    <strong>Tingkat Pertumbuhan Revenue & OPEX:</strong>
+                    Tingkat pertumbuhan `3%` adalah angka konservatif yang sering digunakan dalam model finansial untuk mencerminkan **inflasi jangka panjang** atau pertumbuhan ekonomi (GDP) di Indonesia, yang memastikan bahwa model tidak terlalu optimis.
+                </li>
+                <li>
+                    <strong>Tingkat Pajak:</strong>
+                    Angka `22%` adalah tarif **pajak penghasilan badan (PPh Badan)** yang berlaku saat ini di Indonesia (sesuai UU HPP No. 7 Tahun 2021), menjadikannya data yang faktual dan mutlak.
+                </li>
+                <li>
+                    <strong>Tingkat Diskonto:</strong>
+                    Tingkat diskonto `11%` adalah asumsi yang umum digunakan dalam analisis **NPV (Net Present Value)** untuk merepresentasikan **biaya modal (cost of capital)** atau *required rate of return* yang mencakup risiko investasi.
+                </li>
+            </ul>
+            <p class="text-sm font-semibold text-gray-700">
+                Sumber Informasi:
+                <span class="block font-normal text-gray-600">Dokumen: Audit Kelayakan Investasi – Menjer Ridge Cabins (final).pdf</span>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const luasLahan = 3072.9;
+            const jumlahTipe1 = 9;
+            const jumlahTipe2 = 5;
+            const annualDays = 365;
+            const projectionPeriod = 10; // 10 years for NPV calculation
+
+            // Get all input and result elements
+            const landPriceInput = document.getElementById('landPrice');
+            const buildingCostInput = document.getElementById('buildingCost');
+            const adrTipe1Input = document.getElementById('adrTipe1');
+            const adrTipe2Input = document.getElementById('adrTipe2');
+            const occupancyInput = document.getElementById('occupancy');
+            const fnbRevenueInput = document.getElementById('fnbRevenue');
+            const opexRateInput = document.getElementById('opexRate');
+            const fixedOpexInput = document.getElementById('fixedOpex');
+            const maintenanceRateInput = document.getElementById('maintenanceRate');
+            const revenueGrowthInput = document.getElementById('revenueGrowth');
+            const opexGrowthInput = document.getElementById('opexGrowth');
+            const taxRateInput = document.getElementById('taxRate');
+            const discountRateInput = document.getElementById('discountRate');
+            const calculateBtn = document.getElementById('calculateBtn');
+
+            const totalCapexEl = document.getElementById('totalCapex');
+            const totalRevenueEl = document.getElementById('totalRevenue');
+            const netProfitEl = document.getElementById('netProfit');
+            const roiEl = document.getElementById('roi');
+            const paybackEl = document.getElementById('payback');
+            const npvEl = document.getElementById('npv');
+
+            // Format number to Indonesian Rupiah
+            const formatter = new Intl.NumberFormat('id-ID', {
+                style: 'currency',
+                currency: 'IDR',
+                minimumFractionDigits: 0
+            });
+            const numberFormatter = new Intl.NumberFormat('id-ID', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+
+            const calculateMetrics = () => {
+                // Get values from inputs
+                const landPrice = parseFloat(landPriceInput.value) || 0;
+                const buildingCost = parseFloat(buildingCostInput.value) || 0;
+                const adrTipe1 = parseFloat(adrTipe1Input.value) || 0;
+                const adrTipe2 = parseFloat(adrTipe2Input.value) || 0;
+                const occupancy = parseFloat(occupancyInput.value) / 100 || 0;
+                const fnbRevenuePercent = parseFloat(fnbRevenueInput.value) / 100 || 0;
+                const opexRate = parseFloat(opexRateInput.value) / 100 || 0;
+                const fixedOpex = parseFloat(fixedOpexInput.value) || 0;
+                const maintenanceRate = parseFloat(maintenanceRateInput.value) / 100 || 0;
+                const revenueGrowth = parseFloat(revenueGrowthInput.value) / 100 || 0;
+                const opexGrowth = parseFloat(opexGrowthInput.value) / 100 || 0;
+                const taxRate = parseFloat(taxRateInput.value) / 100 || 0;
+                const discountRate = parseFloat(discountRateInput.value) / 100 || 0;
+
+                // Perform calculations
+                const totalCapex = (luasLahan * landPrice) + buildingCost;
+
+                // Year 1 Calculations
+                const accommodationRevenueY1 = (jumlahTipe1 * adrTipe1 * annualDays * occupancy) + (jumlahTipe2 * adrTipe2 * annualDays * occupancy);
+                const totalRevenueY1 = accommodationRevenueY1 + (accommodationRevenueY1 * fnbRevenuePercent);
+                const maintenanceCostY1 = buildingCost * maintenanceRate;
+                const totalOpexY1 = (totalRevenueY1 * opexRate) + fixedOpex + maintenanceCostY1;
+                const ebitY1 = totalRevenueY1 - totalOpexY1;
+                const netProfitY1 = ebitY1 * (1 - taxRate);
+                const roi = (netProfitY1 / totalCapex) * 100;
+                
+                // NPV and Payback Period calculation over 10 years
+                let npv = 0;
+                let cumulativeCashFlow = 0;
+                let paybackYears = 0;
+                let isPaybackFound = false;
+
+                let projectedRevenue = totalRevenueY1;
+                let projectedOpex = totalOpexY1;
+
+                for (let i = 1; i <= projectionPeriod; i++) {
+                    const ebit = projectedRevenue - projectedOpex;
+                    const cashFlow = ebit * (1 - taxRate);
+
+                    npv += cashFlow / Math.pow(1 + discountRate, i);
+                    
+                    if (!isPaybackFound) {
+                        cumulativeCashFlow += cashFlow;
+                        if (cumulativeCashFlow >= totalCapex) {
+                            paybackYears = i;
+                            isPaybackFound = true;
+                        }
+                    }
+
+                    projectedRevenue *= (1 + revenueGrowth);
+                    
+                    const newFixedOpex = fixedOpex * Math.pow(1 + opexGrowth, i - 1);
+                    const newMaintenanceCost = maintenanceCostY1 * Math.pow(1 + opexGrowth, i - 1);
+                    const newVariableOpex = projectedRevenue * opexRate;
+                    projectedOpex = newVariableOpex + newFixedOpex + newMaintenanceCost;
+                }
+
+                // Display results, check for NaN or Infinity
+                totalCapexEl.textContent = formatter.format(totalCapex);
+                totalRevenueEl.textContent = formatter.format(totalRevenueY1);
+                netProfitEl.textContent = formatter.format(netProfitY1);
+                roiEl.textContent = `${numberFormatter.format(roi)}%`;
+                npvEl.textContent = formatter.format(npv);
+                
+                if (isPaybackFound) {
+                    paybackEl.textContent = `${numberFormatter.format(paybackYears)} tahun`;
+                } else {
+                    paybackEl.textContent = 'Tidak Akan Kembali Modal';
+                }
+
+                if (isNaN(npv) || !isFinite(npv)) {
+                    npvEl.textContent = 'Rp 0';
+                }
+
+                if (isNaN(roi) || !isFinite(roi)) {
+                    roiEl.textContent = '0%';
+                }
+            };
+
+            // Initial calculation on page load
+            calculateMetrics();
+
+            // Attach event listener to the button
+            calculateBtn.addEventListener('click', calculateMetrics);
+        });
+    </script>
+
+</body>
+</html>
