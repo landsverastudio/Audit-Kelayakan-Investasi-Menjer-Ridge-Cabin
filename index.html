@@ -313,529 +313,148 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const luasLahan = 3072.9;
-            const annualDays = 365;
-            const projectionPeriod = 10;
-            const apiKey = "";
-            const apiUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=";
+    document.addEventListener('DOMContentLoaded', () => {
 
-            const buyOption = document.getElementById('buyOption');
-            const loanOption = document.getElementById('loanOption');
-            const leaseOption = document.getElementById('leaseOption');
-            const sharingOption = document.getElementById('sharingOption');
-            const landPriceInputContainer = document.getElementById('landPriceInputContainer');
-            const landLeaseInputContainer = document.getElementById('landLeaseInputContainer');
-            const loanAssumptions = document.getElementById('loanAssumptions');
-            const sharingAssumptions = document.getElementById('sharingAssumptions');
-            const landOwnerProfitElContainer = document.getElementById('landOwnerProfitElContainer');
-            
-            const landPriceInput = document.getElementById('landPrice');
-            const landLeaseCostInput = document.getElementById('landLeaseCost');
-            const buildingCostInput = document.getElementById('buildingCost');
-            const equityInput = document.getElementById('equity');
-            const loanRateInput = document.getElementById('loanRate');
-            const loanTermInput = document.getElementById('loanTerm');
-            const investorShareInput = document.getElementById('investorShare');
-            const landOwnerShareInput = document.getElementById('landOwnerShare');
-            const adrTipe1Input = document.getElementById('adrTipe1');
-            const adrTipe2Input = document.getElementById('adrTipe2');
-            const occupancyInput = document.getElementById('occupancy');
-            const fnbRevenueInput = document.getElementById('fnbRevenue');
-            const opexRateInput = document.getElementById('opexRate');
-            const fixedOpexInput = document.getElementById('fixedOpex');
-            const maintenanceRateInput = document.getElementById('maintenanceRate');
-            const revenueGrowthInput = document.getElementById('revenueGrowth');
-            const opexGrowthInput = document.getElementById('opexGrowth');
-            const taxRateInput = document.getElementById('taxRate');
-            const discountRateInput = document.getElementById('discountRate');
-            const calculateBtn = document.getElementById('calculateBtn');
-            const exportBtn = document.getElementById('exportBtn');
-            // Panggil fungsi formatInputs DI SINI
-            formatInputs([landPriceInput, buildingCostInput, adrTipe1Input, adrTipe2Input, landLeaseCostInput, fixedOpexInput], true);
-            formatInputs([equityInput, loanRateInput, loanTermInput, investorShareInput, landOwnerShareInput, occupancyInput, fnbRevenueInput, opexRateInput, maintenanceRateInput, revenueGrowthInput, opexGrowthInput, taxRateInput, discountRateInput, unitTipe1Input, unitTipe2Input], false);
-            const buttonText = document.getElementById('buttonText');
-            const buttonSpinner = document.getElementById('buttonSpinner');
-            const generateSummaryBtn = document.getElementById('generateSummaryBtn');
-            const summaryContainer = document.getElementById('summaryContainer');
-            const summaryText = document.getElementById('summaryText');
-            
-            const reportContentDiv = document.getElementById('reportContent');
+/* ===================== KONSTANTA ===================== */
+const luasLahan = 3072.9;
+const annualDays = 365;
 
-            const totalCapexEl = document.getElementById('totalCapex');
-            const totalRevenueEl = document.getElementById('totalRevenue');
-            const netProfitEl = document.getElementById('netProfit');
-            const roiEl = document.getElementById('roi');
-            const paybackEl = document.getElementById('payback');
-            const npvEl = document.getElementById('npv');
-            const landOwnerProfitEl = document.getElementById('landOwnerProfit');
-            
-            const roiArc = document.getElementById('roiArc');
-            const roiText = document.getElementById('roiText');
+/* ===================== HELPER ===================== */
+const formatRupiah = v => 'Rp ' + Number(v || 0).toLocaleString('id-ID');
+const unformatRupiah = t => parseFloat((t || '').replace(/[^0-9]/g, '')) || 0;
 
-            const formatter = new Intl.NumberFormat('id-ID', {
-                style: 'currency',
-                currency: 'IDR',
-                minimumFractionDigits: 0
-            });
-            const numberFormatter = new Intl.NumberFormat('id-ID', {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
-            });
+/* ===================== FORMAT INPUT (FIX BUG URUTAN) ===================== */
+const formatInputs = (inputs) => {
+  inputs.forEach(input => {
+    if (!input) return;
+    input.addEventListener('focus', () => {
+      input.value = unformatRupiah(input.value) || '';
+    });
+    input.addEventListener('blur', () => {
+      input.value = formatRupiah(input.value);
+    });
+  });
+};
 
-            let latestCalculatedMetrics = {};
-            let latestSummaryText = '';
+/* ===================== AMBIL ELEMENT ===================== */
+const buyOption = document.getElementById('buyOption');
+const loanOption = document.getElementById('loanOption');
+const leaseOption = document.getElementById('leaseOption');
+const sharingOption = document.getElementById('sharingOption');
 
-            const formatRupiah = (value) => {
-                const number = parseFloat(value);
-                if (isNaN(number)) return '';
-                return `Rp ${number.toLocaleString('id-ID')}`;
-            };
+const landPriceInput = document.getElementById('landPrice');
+const landLeaseCostInput = document.getElementById('landLeaseCost');
+const buildingCostInput = document.getElementById('buildingCost');
 
-            const unformatRupiah = (text) => {
-                const cleanedText = text.replace(/[^,\d]/g, '').replace(/,/g, '.');
-                return parseFloat(cleanedText);
-            };
+const equityInput = document.getElementById('equity');
+const loanRateInput = document.getElementById('loanRate');
+const loanTermInput = document.getElementById('loanTerm');
 
-            landPriceInput.value = formatRupiah(unformatRupiah(landPriceInput.value));
-            buildingCostInput.value = formatRupiah(unformatRupiah(buildingCostInput.value));
-            adrTipe1Input.value = formatRupiah(unformatRupiah(adrTipe1Input.value));
-            adrTipe2Input.value = formatRupiah(unformatRupiah(adrTipe2Input.value));
-            landLeaseCostInput.value = formatRupiah(unformatRupiah(landLeaseCostInput.value));
-            fixedOpexInput.value = formatRupiah(unformatRupiah(fixedOpexInput.value));
+const investorShareInput = document.getElementById('investorShare');
 
-            const formatInputs = (inputs, isRupiah) => {
-                inputs.forEach(input => {
-                    input.addEventListener('focus', (e) => {
-                        const value = e.target.value;
-                        if (isRupiah) {
-                            const unformattedValue = unformatRupiah(value);
-                            e.target.value = isNaN(unformattedValue) ? '' : unformattedValue;
-                        } else {
-                            e.target.value = value.replace(/%/g, '').trim();
-                        }
-                    });
-                    input.addEventListener('blur', (e) => {
-                        const value = e.target.value;
-                        if (isRupiah) {
-                            e.target.value = formatRupiah(value);
-                        } else {
-                            // Do nothing for number inputs on blur
-                        }
-                    });
-                });
-            };
-            
-            const updateInputVisibility = () => {
-                const isSharingScenario = sharingOption.checked;
-                const isLoanScenario = loanOption.checked;
-                const isBuyScenario = buyOption.checked;
-                const isLeaseScenario = leaseOption.checked;
+const unitTipe1Input = document.getElementById('unitTipe1');
+const unitTipe2Input = document.getElementById('unitTipe2');
 
-                if (isBuyScenario || isLoanScenario) {
-                    landPriceInputContainer.classList.remove('hidden');
-                } else {
-                    landPriceInputContainer.classList.add('hidden');
-                }
+const adrTipe1Input = document.getElementById('adrTipe1');
+const adrTipe2Input = document.getElementById('adrTipe2');
+const occupancyInput = document.getElementById('occupancy');
+const fnbRevenueInput = document.getElementById('fnbRevenue');
+const opexRateInput = document.getElementById('opexRate');
+const fixedOpexInput = document.getElementById('fixedOpex');
+const taxRateInput = document.getElementById('taxRate');
 
-                if (isLeaseScenario) {
-                    landLeaseInputContainer.classList.remove('hidden');
-                } else {
-                    landLeaseInputContainer.classList.add('hidden');
-                }
+const calculateBtn = document.getElementById('calculateBtn');
 
-                if (isLoanScenario) {
-                    loanAssumptions.classList.remove('hidden');
-                } else {
-                    loanAssumptions.classList.add('hidden');
-                }
+/* ===================== FORMAT RUPIAH ===================== */
+formatInputs([
+  landPriceInput,
+  landLeaseCostInput,
+  buildingCostInput,
+  adrTipe1Input,
+  adrTipe2Input,
+  fixedOpexInput
+]);
 
-                if (isSharingScenario) {
-                    sharingAssumptions.classList.remove('hidden');
-                    landOwnerProfitElContainer.classList.remove('hidden');
-                } else {
-                    sharingAssumptions.classList.add('hidden');
-                    landOwnerProfitElContainer.classList.add('hidden');
-                }
-            };
+/* ===================== VISIBILITY ===================== */
+const updateInputVisibility = () => {
+  document.getElementById('landPriceInputContainer')
+    ?.classList.toggle('hidden', leaseOption.checked || sharingOption.checked);
 
-            const calculateMetrics = () => {
-                const isBuyScenario = buyOption.checked;
-                const isLoanScenario = loanOption.checked;
-                const isSharingScenario = sharingOption.checked;
-                const currentScenario = document.querySelector('input[name="scenario"]:checked').value;
+  document.getElementById('landLeaseInputContainer')
+    ?.classList.toggle('hidden', !leaseOption.checked);
 
-                const buildingCost = unformatRupiah(buildingCostInput.value) || 0;
-                const adrTipe1 = unformatRupiah(adrTipe1Input.value) || 0;
-                const adrTipe2 = unformatRupiah(adrTipe2Input.value) || 0;
-                const unitTipe1Input = document.getElementById('unitTipe1');
-                const unitTipe2Input = document.getElementById('unitTipe2');
-                const occupancy = parseFloat(occupancyInput.value) / 100 || 0;
-                const fnbRevenuePercent = parseFloat(fnbRevenueInput.value) / 100 || 0;
-                const opexRate = parseFloat(opexRateInput.value) / 100 || 0;
-                const fixedOpex = unformatRupiah(fixedOpexInput.value) || 0;
-                const maintenanceRate = parseFloat(maintenanceRateInput.value) / 100 || 0;
-                const revenueGrowth = parseFloat(revenueGrowthInput.value) / 100 || 0;
-                const opexGrowth = parseFloat(opexGrowthInput.value) / 100 || 0;
-                const taxRate = parseFloat(taxRateInput.value) / 100 || 0;
-                const discountRate = parseFloat(discountRateInput.value) / 100 || 0;
-                // Get unit numbers from input fields
-                const jumlahTipe1 = parseFloat(unitTipe1Input.value) || 0; 
-                const jumlahTipe2 = parseFloat(unitTipe2Input.value) || 0;
+  document.getElementById('loanAssumptions')
+    ?.classList.toggle('hidden', !loanOption.checked);
 
-                let totalCapex;
-                let landLeaseCost = 0;
-                let annualLoanPayment = 0;
-                let investorSharePercent = 1; 
-                let landOwnerSharePercent = 0;
+  document.getElementById('sharingAssumptions')
+    ?.classList.toggle('hidden', !sharingOption.checked);
+};
 
-                const landPrice = unformatRupiah(landPriceInput.value) || 0;
-                const projectCost = (luasLahan * landPrice) + buildingCost;
+/* ===================== CORE HITUNG ===================== */
+const calculateMetrics = () => {
+  const scenario = document.querySelector('input[name="scenario"]:checked')?.value;
 
-                if (isBuyScenario) {
-                    totalCapex = projectCost;
-                } else if (isLoanScenario) {
-                    const equityPercent = parseFloat(equityInput.value) / 100 || 0;
-                    const loanRate = parseFloat(loanRateInput.value) / 100 || 0;
-                    const loanTerm = parseFloat(loanTermInput.value) || 0;
-                    
-                    totalCapex = projectCost * equityPercent;
-                    const loanAmount = projectCost * (1 - equityPercent);
+  const landPrice = unformatRupiah(landPriceInput.value);
+  const buildingCost = unformatRupiah(buildingCostInput.value);
+  const leaseCost = unformatRupiah(landLeaseCostInput.value);
 
-                    if (loanRate > 0 && loanTerm > 0) {
-                        const monthlyRate = loanRate / 12;
-                        const numberOfPayments = loanTerm * 12;
-                        annualLoanPayment = (loanAmount * monthlyRate * Math.pow(1 + monthlyRate, numberOfPayments)) / (Math.pow(1 + monthlyRate, numberOfPayments) - 1) * 12;
-                    }
-                    
-                } else if (isSharingScenario) {
-                    totalCapex = buildingCost;
-                    investorSharePercent = parseFloat(investorShareInput.value) / 100 || 0;
-                    landOwnerSharePercent = parseFloat(landOwnerShareInput.value) / 100 || 0;
-                } else { // Lease Scenario
-                    totalCapex = buildingCost;
-                    landLeaseCost = unformatRupiah(landLeaseCostInput.value) || 0;
-                }
+  const adr1 = unformatRupiah(adrTipe1Input.value);
+  const adr2 = unformatRupiah(adrTipe2Input.value);
 
-                const accommodationRevenueY1 = (jumlahTipe1 * adrTipe1 * annualDays * occupancy) + (jumlahTipe2 * adrTipe2 * annualDays * occupancy);
-                const totalRevenueY1 = accommodationRevenueY1 + (accommodationRevenueY1 * fnbRevenuePercent);
-                const maintenanceCostY1 = buildingCost * maintenanceRate;
-                const totalOpexY1 = (totalRevenueY1 * opexRate) + fixedOpex + maintenanceCostY1 + landLeaseCost + annualLoanPayment;
-                const ebitY1 = totalRevenueY1 - totalOpexY1;
-                const netProfitProjectY1 = ebitY1 * (1 - taxRate);
+  const u1 = Number(unitTipe1Input.value) || 0;
+  const u2 = Number(unitTipe2Input.value) || 0;
 
-                let netProfitInvestorY1 = netProfitProjectY1 * investorSharePercent;
-                const roi = (totalCapex > 0) ? (netProfitInvestorY1 / totalCapex) * 100 : 0;
-                
-                let landOwnerProfitY1 = 0;
-                if (isSharingScenario) {
-                     landOwnerProfitY1 = netProfitProjectY1 * landOwnerSharePercent;
-                }
-                
-                let npv = 0;
-                let cumulativeCashFlow = 0;
-                let paybackYears = 'Tidak Akan Kembali Modal';
-                let isPaybackFound = false;
-                let prevCumulativeCashFlow = 0;
+  const occ = Number(occupancyInput.value) / 100 || 0;
+  const fnb = Number(fnbRevenueInput.value) / 100 || 0;
+  const opex = Number(opexRateInput.value) / 100 || 0;
+  const tax = Number(taxRateInput.value) / 100 || 0;
 
-                let projectedRevenue = totalRevenueY1;
-                let projectedFixedOpex = fixedOpex;
-                let projectedMaintenanceCost = maintenanceCostY1;
-                let projectedLandLeaseCost = landLeaseCost;
+  let capex = 0;
+  let loanPayment = 0;
+  let investorShare = 1;
 
-                for (let i = 1; i <= projectionPeriod; i++) {
-                    const projectedVariableOpex = projectedRevenue * opexRate;
-                    const projectedTotalOpex = projectedVariableOpex + projectedFixedOpex + projectedMaintenanceCost + projectedLandLeaseCost + annualLoanPayment;
-                    const ebit = projectedRevenue - projectedTotalOpex;
-                    const netProfit = ebit * (1 - taxRate);
-                    const cashFlow = netProfit * investorSharePercent;
+  const projectCost = (luasLahan * landPrice) + buildingCost;
 
-                    npv += cashFlow / Math.pow(1 + discountRate, i);
-                    
-                    if (!isPaybackFound) {
-                        cumulativeCashFlow += cashFlow;
-                        if (cumulativeCashFlow >= totalCapex) {
-                             paybackYears = i + (totalCapex - prevCumulativeCashFlow) / (cumulativeCashFlow - prevCumulativeCashFlow);
-                             paybackYears = `${numberFormatter.format(paybackYears)} tahun`;
-                             isPaybackFound = true;
-                        }
-                    }
-                    prevCumulativeCashFlow = cumulativeCashFlow;
+  if (scenario === 'buy') capex = projectCost;
 
-                    projectedRevenue *= (1 + revenueGrowth);
-                    projectedFixedOpex *= (1 + opexGrowth);
-                    projectedMaintenanceCost *= (1 + opexGrowth);
-                    projectedLandLeaseCost *= (1 + opexGrowth);
-                }
+  if (scenario === 'loan') {
+    const eq = Number(equityInput.value) / 100 || 0;
+    const r = Number(loanRateInput.value) / 100 / 12 || 0;
+    const n = Number(loanTermInput.value) * 12 || 0;
+    const loan = projectCost * (1 - eq);
+    capex = projectCost * eq;
+    loanPayment = r > 0 ? (loan * r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1) * 12 : 0;
+  }
 
-                latestCalculatedMetrics = {
-                    totalCapex: totalCapex,
-                    totalRevenueY1: totalRevenueY1,
-                    netProfitInvestorY1: netProfitInvestorY1,
-                    roi: roi,
-                    paybackYears: paybackYears,
-                    npv: npv,
-                    landOwnerProfitY1: landOwnerProfitY1,
-                    scenario: currentScenario,
-                    
-                    // Store input values for the report
-                    inputs: {
-                        landPrice: landPriceInput.value,
-                        landLeaseCost: landLeaseCostInput.value,
-                        buildingCost: buildingCostInput.value,
-                        equity: equityInput.value,
-                        loanRate: loanRateInput.value,
-                        loanTerm: loanTermInput.value,
-                        investorShare: investorShareInput.value,
-                        landOwnerShare: landOwnerShareInput.value,
-                        adrTipe1: adrTipe1Input.value,
-                        adrTipe2: adrTipe2Input.value,
-                        occupancy: occupancyInput.value,
-                        fnbRevenue: fnbRevenueInput.value,
-                        opexRate: opexRateInput.value,
-                        fixedOpex: fixedOpexInput.value,
-                        maintenanceRate: maintenanceRateInput.value,
-                        revenueGrowth: revenueGrowthInput.value,
-                        opexGrowth: opexGrowthInput.value,
-                        taxRate: taxRateInput.value,
-                        discountRate: discountRateInput.value,
-                    }
-                };
+  if (scenario === 'lease') capex = buildingCost;
 
+  if (scenario === 'sharing') {
+    capex = buildingCost;
+    investorShare = Number(investorShareInput.value) / 100 || 1;
+  }
 
-                totalCapexEl.textContent = formatter.format(totalCapex);
-                totalRevenueEl.textContent = formatter.format(totalRevenueY1);
-                netProfitEl.textContent = formatter.format(netProfitInvestorY1);
-                roiEl.textContent = `${numberFormatter.format(roi)}%`;
-                npvEl.textContent = formatter.format(npv);
-                paybackEl.textContent = paybackYears;
-                landOwnerProfitEl.textContent = formatter.format(landOwnerProfitY1);
+  const accRevenue = (u1 * adr1 + u2 * adr2) * annualDays * occ;
+  const revenue = accRevenue * (1 + fnb);
 
-                if (isNaN(npv) || !isFinite(npv)) {
-                    npvEl.textContent = 'Rp 0';
-                }
+  const opexTotal = revenue * opex + unformatRupiah(fixedOpexInput.value) + leaseCost + loanPayment;
+  const netProfit = (revenue - opexTotal) * (1 - tax) * investorShare;
 
-                if (isNaN(roi) || !isFinite(roi)) {
-                    roiEl.textContent = '0%';
-                }
+  document.getElementById('totalCapex').textContent = formatRupiah(capex);
+  document.getElementById('totalRevenue').textContent = formatRupiah(revenue);
+  document.getElementById('netProfit').textContent = formatRupiah(netProfit);
+};
 
-                const circumference = 2 * Math.PI * 50;
-                let roiValue = Math.min(Math.max(roi, 0), 200);
-                const offset = circumference - (roiValue / 200 * circumference);
-                
-                roiArc.style.strokeDasharray = circumference;
-                roiArc.style.strokeDashoffset = offset;
-                roiText.textContent = `${Math.round(roiValue)}%`;
+/* ===================== EVENT ===================== */
+[buyOption, loanOption, leaseOption, sharingOption]
+  .forEach(r => r?.addEventListener('change', () => {
+    updateInputVisibility();
+    calculateMetrics();
+  }));
 
-                if (roi > 0) {
-                    roiArc.classList.remove('text-red-500');
-                    roiArc.classList.add('text-green-500');
-                } else {
-                    roiArc.classList.remove('text-green-500');
-                    roiArc.classList.add('text-red-500');
-                }
+calculateBtn?.addEventListener('click', calculateMetrics);
 
-                 // Hide summary and enable the summary and export button
-                summaryContainer.classList.add('hidden');
-                generateSummaryBtn.disabled = false;
-                generateSummaryBtn.classList.remove('bg-indigo-400', 'cursor-not-allowed');
-                generateSummaryBtn.classList.add('hover:bg-indigo-700');
-                exportBtn.disabled = false;
-                exportBtn.classList.remove('bg-slate-400', 'cursor-not-allowed');
-                exportBtn.classList.add('hover:bg-slate-700');
-            };
-
-            const handleCalculateClick = () => {
-                buttonText.textContent = 'Menghitung...';
-                buttonSpinner.classList.remove('hidden');
-                calculateBtn.disabled = true;
-                calculateBtn.classList.add('bg-blue-400', 'cursor-not-allowed');
-                calculateBtn.classList.remove('hover:bg-blue-700');
-
-                setTimeout(() => {
-                    calculateMetrics();
-                    buttonText.textContent = 'Lakukan Proyeksi';
-                    buttonSpinner.classList.add('hidden');
-                    calculateBtn.disabled = false;
-                    calculateBtn.classList.remove('bg-blue-400', 'cursor-not-allowed');
-                    calculateBtn.classList.add('hover:bg-blue-700');
-                }, 1500);
-            };
-
-            const handleGenerateSummary = async () => {
-                summaryContainer.classList.add('hidden');
-                generateSummaryBtn.disabled = true;
-                generateSummaryBtn.innerHTML = 'Membuat Ringkasan...';
-
-                const { totalCapex, totalRevenueY1, netProfitInvestorY1, roi, paybackYears, npv, scenario } = latestCalculatedMetrics;
-                const scenarioName = {
-                    'buy': 'Akuisisi Lahan (Tunai)',
-                    'loan': 'Akuisisi Lahan (Utang)',
-                    'lease': 'Sewa Lahan',
-                    'sharing': 'Joint Venture'
-                }[scenario];
-                
-                const prompt = `Bertindak sebagai analis keuangan tingkat senior. Buat ringkasan eksekutif yang rapi dan terstruktur dalam format Markdown. Gunakan judul dan sub-judul untuk setiap bagian, serta poin-poin untuk metrik kunci. Gunakan bahasa Indonesia yang formal. Hindari simbol-simbol tidak berguna. Ini adalah proposal investasi "Menjer Ridge Cabins" dengan skenario "${scenarioName}". Masukkan metrik keuangan ini:
-                - Total Biaya Modal (CapEx): ${formatter.format(totalCapex)}
-                - Total Pendapatan Tahun Pertama: ${formatter.format(totalRevenueY1)}
-                - Laba Bersih Tahun Pertama: ${formatter.format(netProfitInvestorY1)}
-                - ROI (Tahun 1): ${numberFormatter.format(roi)}%
-                - Periode Pengembalian Modal: ${paybackYears}
-                - Net Present Value (NPV) (10 Tahun): ${formatter.format(npv)}
-                Sajikan analisis yang profesional, menyoroti potensi proyek dan kelayakan investasi.`;
-
-                 const payload = {
-                    contents: [{ parts: [{ text: prompt }] }],
-                    systemInstruction: {
-                        parts: [{ text: "Anda adalah seorang analis keuangan senior yang menyusun ringkasan eksekutif dalam format Markdown yang rapi dan terstruktur." }]
-                    },
-                };
-
-                try {
-                    const response = await fetch(apiUrl + apiKey, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(payload)
-                    });
-
-                    const result = await response.json();
-                    const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
-
-                    if (text) {
-                        latestSummaryText = text;
-                        summaryText.innerHTML = marked.parse(text); // Menggunakan library marked.js untuk rendering Markdown
-                        summaryContainer.classList.remove('hidden');
-                    } else {
-                        summaryText.textContent = "Maaf, gagal membuat ringkasan. Silakan coba lagi.";
-                        summaryContainer.classList.remove('hidden');
-                    }
-                } catch (error) {
-                    console.error("Error calling Gemini API:", error);
-                    summaryText.textContent = "Terjadi kesalahan saat menghubungi API. Silakan coba lagi nanti.";
-                    summaryContainer.classList.remove('hidden');
-                } finally {
-                    generateSummaryBtn.innerHTML = 'Buat Ringkasan Eksekutif';
-                    generateSummaryBtn.disabled = false;
-                }
-            };
-            
-            const handleExportClick = () => {
-                const { jsPDF } = window.jspdf;
-                const doc = new jsPDF('p', 'pt', 'a4');
-                const scenarioName = {
-                    'buy': 'Akuisisi Lahan (Tunai)',
-                    'loan': 'Akuisisi Lahan (Utang)',
-                    'lease': 'Sewa Lahan',
-                    'sharing': 'Joint Venture'
-                }[latestCalculatedMetrics.scenario];
-
-                // Create a temporary element to render the report content for PDF
-                const reportContent = document.createElement('div');
-                reportContent.style.width = '210mm'; // A4 width
-                reportContent.style.padding = '20mm';
-                reportContent.style.fontSize = '12pt';
-
-                reportContent.innerHTML = `
-                    <h1 style="font-size: 1.5em; font-weight: bold; text-align: center; margin-bottom: 20px;">Laporan Proyeksi Keuangan: Menjer Ridge Cabins</h1>
-                    <ul style="margin-bottom: 20px; list-style-type: none; padding-left: 0;">
-                        <li><strong>Proyek:</strong> Menjer Ridge Cabins</li>
-                        <li><strong>Lokasi:</strong> Jalan Bukit Cinta, Desa Maron, Garung, Wonosobo, Jawa Tengah, 56354</li>
-                        <li><strong>Luas Lahan:</strong> 3.072,9 m²</li>
-                        <li><strong>Skenario Investasi:</strong> ${scenarioName}</li>
-                    </ul>
-
-                    <h2 style="font-size: 1.2em; font-weight: bold; margin-bottom: 10px;">Ringkasan Metrik Kinerja Kunci</h2>
-                    <ul style="margin-bottom: 20px;">
-                        <li><strong>Total Biaya Modal (CapEx):</strong> ${formatter.format(latestCalculatedMetrics.totalCapex)}</li>
-                        <li><strong>Total Pendapatan Proyek (Tahun 1):</strong> ${formatter.format(latestCalculatedMetrics.totalRevenueY1)}</li>
-                        <li><strong>Laba Bersih Setelah Pajak (Tahun 1):</strong> ${formatter.format(latestCalculatedMetrics.netProfitInvestorY1)}</li>
-                        <li><strong>ROI (Return on Investment) (Tahun 1):</strong> ${numberFormatter.format(latestCalculatedMetrics.roi)}%</li>
-                        <li><strong>Periode Pengembalian (Payback Period):</strong> ${latestCalculatedMetrics.paybackYears}</li>
-                        <li><strong>NPV (Net Present Value) (10 Tahun):</strong> ${formatter.format(latestCalculatedMetrics.npv)}</li>
-                        ${latestCalculatedMetrics.scenario === 'sharing' ? `<li><strong>Laba Bersih untuk Pemilik Lahan (Tahun 1):</strong> ${formatter.format(latestCalculatedMetrics.landOwnerProfitY1)}</li>` : ''}
-                    </ul>
-
-                    <h2 style="font-size: 1.2em; font-weight: bold; margin-bottom: 10px;">Asumsi Parameter</h2>
-                    <ul style="margin-bottom: 20px;">
-                        <li><strong>Biaya Lahan:</strong> ${latestCalculatedMetrics.inputs.landPrice}</li>
-                        <li><strong>Biaya Sewa Lahan:</strong> ${latestCalculatedMetrics.inputs.landLeaseCost}</li>
-                        <li><strong>Biaya Konstruksi & Fasilitas:</strong> ${latestCalculatedMetrics.inputs.buildingCost}</li>
-                        <li><strong>Rasio Ekuitas:</strong> ${latestCalculatedMetrics.inputs.equity}%</li>
-                        <li><strong>Bunga Pinjaman Tahunan:</strong> ${latestCalculatedMetrics.inputs.loanRate}%</li>
-                        <li><strong>Jangka Waktu Pinjaman:</strong> ${latestCalculatedMetrics.inputs.loanTerm} Tahun</li>
-                        <li><strong>Porsi Bagi Hasil Investor:</strong> ${latestCalculatedMetrics.inputs.investorShare}%</li>
-                        <li><strong>Porsi Bagi Hasil Pemilik Lahan:</strong> ${latestCalculatedMetrics.inputs.landOwnerShare}%</li>
-                        <li><strong>ADR Tipe 1:</strong> ${latestCalculatedMetrics.inputs.adrTipe1}</li>
-                        <li><strong>ADR Tipe 2:</strong> ${latestCalculatedMetrics.inputs.adrTipe2}</li>
-                        <li><strong>Okupansi Tahunan:</strong> ${latestCalculatedMetrics.inputs.occupancy}%</li>
-                        <li><strong>Pendapatan F&B:</strong> ${latestCalculatedMetrics.inputs.fnbRevenue}%</li>
-                        <li><strong>Rasio OPEX Variabel:</strong> ${latestCalculatedMetrics.inputs.opexRate}%</li>
-                        <li><strong>OPEX Tetap:</strong> ${latestCalculatedMetrics.inputs.fixedOpex}</li>
-                        <li><strong>Biaya Pemeliharaan Tahunan:</strong> ${latestCalculatedMetrics.inputs.maintenanceRate}%</li>
-                        <li><strong>Pertumbuhan Pendapatan Tahunan:</strong> ${latestCalculatedMetrics.inputs.revenueGrowth}%</li>
-                        <li><strong>Pertumbuhan OPEX Tahunan:</strong> ${latestCalculatedMetrics.inputs.opexGrowth}%</li>
-                        <li><strong>Tingkat Pajak Korporasi:</strong> ${latestCalculatedMetrics.inputs.taxRate}%</li>
-                        <li><strong>Tingkat Diskonto:</strong> ${latestCalculatedMetrics.inputs.discountRate}%</li>
-                    </ul>
-
-                    <p style="font-size: 0.8em; color: gray; text-align: center; margin-top: 50px;">Laporan ini dibuat secara otomatis oleh Kalkulator Kelayakan Investasi Lanjutan</p>
-                `;
-
-                document.body.appendChild(reportContent);
-
-                html2canvas(reportContent, {
-                    scale: 2,
-                    logging: true,
-                    useCORS: true
-                }).then(canvas => {
-                    const imgData = canvas.toDataURL('image/jpeg', 1.0);
-                    const imgWidth = 595.28; 
-                    const pageHeight = 841.89;
-                    const imgHeight = canvas.height * imgWidth / canvas.width;
-                    let heightLeft = imgHeight;
-                    let position = 0;
-                    
-                    const doc = new jsPDF('p', 'pt', 'a4');
-                    doc.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
-                    heightLeft -= pageHeight;
-
-                    while (heightLeft >= 0) {
-                        position = heightLeft - imgHeight;
-                        doc.addPage();
-                        doc.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
-                        heightLeft -= pageHeight;
-                    }
-
-                    doc.save(`Laporan-Proyeksi-Menjer-Ridge-Cabins.pdf`);
-                    document.body.removeChild(reportContent);
-                });
-            };
-
-            updateInputVisibility();
-            buyOption.addEventListener('change', updateInputVisibility);
-            loanOption.addEventListener('change', updateInputVisibility);
-            leaseOption.addEventListener('change', updateInputVisibility);
-            sharingOption.addEventListener('change', updateInputVisibility);
-            calculateBtn.addEventListener('click', handleCalculateClick);
-            generateSummaryBtn.addEventListener('click', handleGenerateSummary);
-            exportBtn.addEventListener('click', handleExportClick);
-
-            const allInputs = document.querySelectorAll('input[type="text"], input[type="number"]');
-            allInputs.forEach((input, index) => {
-                input.addEventListener('keydown', (e) => {
-                    if (e.key === 'Enter') {
-                        e.preventDefault();
-                        const nextInput = allInputs[index + 1];
-                        if (nextInput) {
-                            nextInput.focus();
-                        }
-                    }
-                });
-            });
-
-        });
+updateInputVisibility();
+});
     </script>
     <!-- Marked.js for Markdown rendering -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
