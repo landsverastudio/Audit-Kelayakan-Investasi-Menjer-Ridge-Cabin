@@ -351,6 +351,9 @@
             const discountRateInput = document.getElementById('discountRate');
             const calculateBtn = document.getElementById('calculateBtn');
             const exportBtn = document.getElementById('exportBtn');
+            // Panggil fungsi formatInputs DI SINI
+            formatInputs([landPriceInput, buildingCostInput, adrTipe1Input, adrTipe2Input, landLeaseCostInput, fixedOpexInput], true);
+            formatInputs([equityInput, loanRateInput, loanTermInput, investorShareInput, landOwnerShareInput, occupancyInput, fnbRevenueInput, opexRateInput, maintenanceRateInput, revenueGrowthInput, opexGrowthInput, taxRateInput, discountRateInput, unitTipe1Input, unitTipe2Input], false);
             const buttonText = document.getElementById('buttonText');
             const buttonSpinner = document.getElementById('buttonSpinner');
             const generateSummaryBtn = document.getElementById('generateSummaryBtn');
@@ -423,10 +426,6 @@
                 });
             };
             
-            formatInputs([landPriceInput, buildingCostInput, adrTipe1Input, adrTipe2Input, landLeaseCostInput, fixedOpexInput], true);
-            formatInputs([equityInput, loanRateInput, loanTermInput, investorShareInput, landOwnerShareInput, occupancyInput, fnbRevenueInput, opexRateInput, maintenanceRateInput, revenueGrowthInput, opexGrowthInput, taxRateInput, discountRateInput, unitTipe1Input, unitTipe2Input], false);
-
-
             const updateInputVisibility = () => {
                 const isSharingScenario = sharingOption.checked;
                 const isLoanScenario = loanOption.checked;
