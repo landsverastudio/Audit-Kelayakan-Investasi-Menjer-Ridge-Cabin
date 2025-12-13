@@ -138,14 +138,23 @@
                     </div>
 
                     <!-- Pendapatan & Biaya Operasional -->
-                    <div class="space-y-2 p-4 bg-green-50 rounded-lg">
+                <div class="space-y-2 p-4 bg-green-50 rounded-lg">
+                        <h3 class="text-md font-semibold text-green-700">Unit & Harga</h3>
+                        <div>
+                            <label for="unitTipe1" class="block text-xs font-medium text-gray-600">Jumlah Unit Tipe 1</label>
+                            <input type="number" id="unitTipe1" value="9" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-1.5 text-xs">
+                        </div>
+                        <div>
+                            <label for="unitTipe2" class="block text-xs font-medium text-gray-600">Jumlah Unit Tipe 2</label>
+                            <input type="number" id="unitTipe2" value="5" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-1.5 text-xs">
+                        </div>
                         <h3 class="text-md font-semibold text-green-700">Pendapatan & OPEX</h3>
                         <div>
-                            <label for="adrTipe1" class="block text-xs font-medium text-gray-600">ADR Tipe 1 (9 unit)</label>
+                            <label for="adrTipe1" class="block text-xs font-medium text-gray-600">ADR Tipe 1 (Harga per malam)</label>
                             <input type="text" id="adrTipe1" value="Rp 900.000" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-1.5 text-xs">
                         </div>
                         <div>
-                            <label for="adrTipe2" class="block text-xs font-medium text-gray-600">ADR Tipe 2 (5 unit)</label>
+                     <label for="adrTipe2" class="block text-xs font-medium text-gray-600">ADR Tipe 2 (Harga per malam)</label>
                             <input type="text" id="adrTipe2" value="Rp 750.000" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-1.5 text-xs">
                         </div>
                         <div>
@@ -306,8 +315,6 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const luasLahan = 3072.9;
-            const jumlahTipe1 = 9;
-            const jumlahTipe2 = 5;
             const annualDays = 365;
             const projectionPeriod = 10;
             const apiKey = "";
@@ -417,7 +424,7 @@
             };
             
             formatInputs([landPriceInput, buildingCostInput, adrTipe1Input, adrTipe2Input, landLeaseCostInput, fixedOpexInput], true);
-            formatInputs([equityInput, loanRateInput, loanTermInput, investorShareInput, landOwnerShareInput, occupancyInput, fnbRevenueInput, opexRateInput, maintenanceRateInput, revenueGrowthInput, opexGrowthInput, taxRateInput, discountRateInput], false);
+            formatInputs([equityInput, loanRateInput, loanTermInput, investorShareInput, landOwnerShareInput, occupancyInput, fnbRevenueInput, opexRateInput, maintenanceRateInput, revenueGrowthInput, opexGrowthInput, taxRateInput, discountRateInput, unitTipe1Input, unitTipe2Input], false);
 
 
             const updateInputVisibility = () => {
@@ -462,6 +469,8 @@
                 const buildingCost = unformatRupiah(buildingCostInput.value) || 0;
                 const adrTipe1 = unformatRupiah(adrTipe1Input.value) || 0;
                 const adrTipe2 = unformatRupiah(adrTipe2Input.value) || 0;
+                const unitTipe1Input = document.getElementById('unitTipe1');
+                const unitTipe2Input = document.getElementById('unitTipe2');
                 const occupancy = parseFloat(occupancyInput.value) / 100 || 0;
                 const fnbRevenuePercent = parseFloat(fnbRevenueInput.value) / 100 || 0;
                 const opexRate = parseFloat(opexRateInput.value) / 100 || 0;
@@ -471,6 +480,9 @@
                 const opexGrowth = parseFloat(opexGrowthInput.value) / 100 || 0;
                 const taxRate = parseFloat(taxRateInput.value) / 100 || 0;
                 const discountRate = parseFloat(discountRateInput.value) / 100 || 0;
+                // Get unit numbers from input fields
+                const jumlahTipe1 = parseFloat(unitTipe1Input.value) || 0; 
+                const jumlahTipe2 = parseFloat(unitTipe2Input.value) || 0;
 
                 let totalCapex;
                 let landLeaseCost = 0;
